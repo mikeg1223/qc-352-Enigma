@@ -28,7 +28,7 @@ class Rotor:
             return
         else:
             for _ in range(26):
-                self.permForward[chr(_+97)] = Rotor.rotors[rotorNumber-1][Rotor.PERM][(_+self.ring)%26]
+                self.permForward[chr(_+97)] = Rotor.rotors[rotorNumber-1][Rotor.PERM][(_-self.ring)%26]
                 self.permBackwards[Rotor.rotors[rotorNumber-1][Rotor.PERM][(_+self.ring)%26]] = chr(_+97)
                 self.notch = Rotor.rotors[rotorNumber-1][Rotor.NOTCH]
             self.isSet = True
@@ -44,10 +44,9 @@ class Rotor:
             ret_value = True
 
         for _ in range(26):
-                self.permForward[chr(_+97)] = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_+self.ring+self.currentRotation)%26]
-                self.permBackwards[Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_+self.ring)%26]] = chr(_+97)
-                self.notch = Rotor.rotors[self.rotorNumber-1][Rotor.NOTCH] 
-
+            self.permForward[chr(_+97)] = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]
+            self.permBackwards[Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]] = chr(_+97)
+            
         return ret_value
 
 
@@ -57,8 +56,8 @@ class Rotor:
             bvalue = self.rotate()
         if isForward:
             #return (self.rotors[self.rotorNumber - 1][Rotor.PERM][(self.currentRotation + self.ring+ord(input)-97) %26])
-            return (self.permForward[chr((((ord(input)-97)+ self.ring)%26)+97)], bvalue)
-        return (self.permBackwards[chr((((ord(input)-97)+ self.ring)%26)+97)], bvalue)
+            return (self.permForward[chr((((ord(input)-97))%26)+97)], bvalue)
+        return (self.permBackwards[chr((((ord(input)-97))%26)+97)], bvalue)
 
 
 
@@ -88,13 +87,24 @@ class Enigma:
 
     def encryptLetter(self, input):
         inp = self.steckerBoard[input]
+
         working_val = self.rotors["fast"].output(inp, True, True)
+        working_val = self.rotors["middle"].output((chr((ord(working_val[0])-97-self.rotors["fast"].currentRotation + self.rotors["fast"].ring)%26 + 97)), True, working_val[1])
+        working_val = self.rotors["slow"].output((chr((ord(working_val[0])-97-self.rotors["middle"].currentRotation + self.rotors["middle"].ring)%26 + 97)), True, working_val[1])
+        working_val = self.reflector[(ord(working_val[0])-97-self.rotors["slow"].currentRotation + self.rotors["slow"].ring)%26]
+        working_val = self.rotors["slow"].output((chr((ord(working_val[0]) - 97 + self.rotors["slow"].currentRotation - self.rotors["slow"].ring)%26 + 97)), False, False)
+        working_val = self.rotors["middle"].output((chr((ord(working_val[0]) - 97 + self.rotors["middle"].currentRotation - self.rotors["middle"].ring)%26 + 97)), False, False)
+        working_val = self.rotors["fast"].output((chr((ord(working_val[0]) -97 + self.rotors["fast"].currentRotation - self.rotors["fast"].ring)%26 + 97)), False, False)
+       
+       
+        ''' working_val = self.rotors["fast"].output(inp, True, True)
         working_val = self.rotors["middle"].output(working_val[0], True, working_val[1])
         working_val = self.rotors["slow"].output(working_val[0], True, working_val[1])
         working_val = self.reflector[ord(working_val[0])-97]
         working_val = self.rotors["slow"].output(working_val, False, False)
         working_val = self.rotors["middle"].output(working_val[0], False, False)
-        working_val = self.rotors["fast"].output(working_val[0], False, False)
+        working_val = self.rotors["fast"].output(working_val[0], False, False)'''
+
         ret_val = self.steckerBoard[working_val[0]]
         return ret_val
 
@@ -107,7 +117,7 @@ class Enigma:
 
 
 e = Enigma()
-e.setRotors(1, 0, 2, 0, 3, 0)
+e.setRotors(1, 1, 2, 0, 3, 0)
 s = "abcd"
 out = e.encryptString(s)
 print(out)
