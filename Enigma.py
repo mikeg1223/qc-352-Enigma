@@ -203,10 +203,42 @@ class Enigma:
         None
     '''
     def setSteckerboardPlug(self, letter1, letter2):
-        self.steckerBoard[letter1] = letter2
-        self.steckerBoard[letter2] = letter1
 
-    
+        if self.steckerBoard[letter1] != letter1:
+            print("stecker", letter1, "to", letter2, "not added.", letter1, "is already steckered")
+            return
+        elif self.steckerBoard[letter2] != letter2:
+            print("stecker", letter1, "to", letter2, "not added.", letter2, "is already steckered")
+            return 
+        else:
+            self.steckerBoard[letter1] = letter2
+            self.steckerBoard[letter2] = letter1
+
+
+    '''
+    This function will tell the user whether a specific letter is currently steckered. 
+    Args:
+        letter      A character representing the letter we wish to test.
+    Returns:
+        A boolean value stating whether the letter is steckered.
+    '''
+    def isSteckeredLetter(self, letter: chr) -> bool:
+        return self.steckerBoard[letter] != letter
+
+
+    '''
+    This function will reset the steckerboard to no plugs
+    Args:
+        None
+    Returns:
+        None
+    '''
+    def resetSteckerboard(self):
+        # init the steckerboard to chars that map to themself
+        for _ in range(26):
+            self.steckerBoard[chr(_+97)] = chr(_+97)
+
+
     '''
     This function encrypts a single letter by sending it through all the steckerboard, 
     the rotors forward, the reflector, the rotors backwards, and the steckerboard again. 
@@ -247,6 +279,20 @@ class Enigma:
 
 
     '''
+    This function will remove a steckerboard plug given one letter that is plugged.
+    Args:
+        letter1     A character that is supposedly plugged in the steckerboard.
+    Returns:
+        None
+    '''
+    def removeSteckerPlug(self, letter1: chr):
+        temp = self.steckerBoard[letter1]
+        # a pythonic swap
+        self.steckerBoard[letter1], self.steckerBoard[temp] = letter1, temp
+
+
+
+    '''
     This function will "remove" the rotors, "empty" the steckerboard, and reset the rotor flag
     Args:
         None
@@ -257,9 +303,7 @@ class Enigma:
         self.rotors = {"fast":None, "middle":None, "slow":None }
         self.steckerBoard = {}
         self.isSet = False
-        # init the steckerboard to chars that map to themself
-        for _ in range(26):
-            self.steckerBoard[chr(_+97)] = chr(_+97)
+        self.resetSteckerboard()
 
 
     '''
@@ -283,8 +327,8 @@ class Enigma:
 # program runs from below 
 if __name__ == "__main__":
     e = Enigma()
-    e.setRotors(1, 1, 2, 0, 3, 0)
-    s = "abcd"
+    e.setRotors(1, 0, 2, 0, 3, 0)
+    s = "ipjjsktenskdaaaaaaaaaaaaaaa"
     out = e.encryptString(s)
     print(out)
     s = out
