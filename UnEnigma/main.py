@@ -23,6 +23,7 @@ table = {}
 rots = [_+1 for _ in range(8)]
 ringPos = [_ for _ in range(26)]
 
+'''
 with open("storeDecrypts.txt", 'w') as file:
     for x in rots:
         for y in rots:
@@ -32,4 +33,5 @@ with open("storeDecrypts.txt", 'w') as file:
                         for c in ringPos:
                             e.setRotors(x,a,y,b,z,c)
                             file.write(e.encryptString(cipherText))
+'''
                             
