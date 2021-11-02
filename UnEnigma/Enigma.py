@@ -94,7 +94,7 @@ class Rotor:
     '''
     def resetRotorPosition(self):
         self.currentRotation = 0
-        self.perm = Rotor.rotors[self.rotorNumber-1][Rotor.PERM]
+        self.perm = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][-self.ring:] + Rotor.rotors[self.rotorNumber-1][Rotor.PERM][:-self.ring]
 
 
     '''
@@ -108,7 +108,7 @@ class Rotor:
     def setRotorRing(self, input: int):
         if input >= 0:
             self.ring = input % 26
-            self.perm = self.perm[-self.ring:] + self.perm[:-self.ring]
+            self.perm = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][-self.ring:] + Rotor.rotors[self.rotorNumber-1][Rotor.PERM][:-self.ring]
             
 
 
@@ -321,7 +321,7 @@ class Enigma:
 if __name__ == "__main__":
     e = Enigma()
     e.setRotors(1, 3, 2, 0, 3, 0)
-    s = "abcd"
+    s = "fuckaroundandfindout"
     out = e.encryptString(s)
     print(out)
     s = out
