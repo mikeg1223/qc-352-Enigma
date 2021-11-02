@@ -43,8 +43,9 @@ class Rotor:
         self.isFirst = first
         self.isSet = False
         self.ring = ringSetting
-        self.permForward = {}
-        self.permBackwards = {}
+        # self.permForward = {}
+        # self.permBackwards = {}
+        self.perm = Rotor.rotors[rotorNumber-1][Rotor.PERM]
         self.notch = Rotor.rotors[rotorNumber-1][Rotor.NOTCH]
         self.rotorNumber = rotorNumber
         self.currentRotation = 0
@@ -56,9 +57,7 @@ class Rotor:
         
         # initial permutation. This will never be used? Not sure if it's needed really 
         else:
-            for _ in range(26):
-                self.permForward[chr(_+97)] = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]
-                self.permBackwards[Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]] = chr(_+97)
+            self.perm = self.perm[-ringSetting:] + self.perm[:-ringSetting]
             self.isSet = True
        
 
@@ -82,10 +81,7 @@ class Rotor:
             ret_value = True
 
         # Set the new permutation. It is the default rotor perm + rotation - ring setting. Also setting inverse perm
-        for _ in range(26):
-            self.permForward[chr(_+97)] = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]
-            self.permBackwards[Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]] = chr(_+97)
-            
+        self.perm = self.perm[1:] + self.perm[0]
         return ret_value
 
 
@@ -98,9 +94,7 @@ class Rotor:
     '''
     def resetRotorPosition(self):
         self.currentRotation = 0
-        for _ in range(26):
-            self.permForward[chr(_+97)] = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]
-            self.permBackwards[Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]] = chr(_+97)
+        self.perm = Rotor.rotors[self.rotorNumber-1][Rotor.PERM]
 
 
     '''
@@ -114,9 +108,8 @@ class Rotor:
     def setRotorRing(self, input: int):
         if input >= 0:
             self.ring = input % 26
-            for _ in range(26):
-                self.permForward[chr(_+97)] = Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]
-                self.permBackwards[Rotor.rotors[self.rotorNumber-1][Rotor.PERM][(_-self.ring+self.currentRotation)%26]] = chr(_+97)
+            self.perm = self.perm[-self.ring:] + self.perm[:-self.ring]
+            
 
 
     '''
@@ -137,8 +130,8 @@ class Rotor:
             if rot:
                 bvalue = self.rotate()
             if isForward:
-                return (self.permForward[chr((((ord(input)-97))%26)+97)], bvalue)
-            return (self.permBackwards[chr((((ord(input)-97))%26)+97)], bvalue)
+                return (self.perm[ord(input) - 97], bvalue)
+            return (chr(self.perm.find(input)+97), bvalue)
 
 
 '''
@@ -327,8 +320,8 @@ class Enigma:
 # program runs from below 
 if __name__ == "__main__":
     e = Enigma()
-    e.setRotors(1, 0, 2, 0, 3, 0)
-    s = "ipjjsktenskdaaaaaaaaaaaaaaa"
+    e.setRotors(1, 3, 2, 0, 3, 0)
+    s = "abcd"
     out = e.encryptString(s)
     print(out)
     s = out
