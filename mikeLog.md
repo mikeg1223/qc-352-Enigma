@@ -65,3 +65,46 @@ Finished:
 ---
 
 Note from professor: Throw out decryptions' that have strings of illogical formats, like xpv in a row. The key space is less than DES so brute forcing is possible. Ideally we will be looking at thousands of decrypt's by sight. We've been given a crib. What is it?
+
+To do:
+
+* Finish reading the articles.
+* Start implementing the UML design
+* Find the crib
+
+---
+
+#### 10/29/21
+
+---
+
+We are fairly certain that the crib we have is going to be the word "The" at the start of the message. 
+
+Started working on creating the Rotor and Enigma classes from the UML design. Met up with George and Matin to work in person and chat about the processes for the program. We discussed our attack methods for decryption and shortcuts we can take. 
+
+To do:
+
+* Finish the articles
+* Finish the class designs
+
+Finished:
+
+* Find the crib
+
+---
+
+#### 10/30/21 
+
+---
+
+Completed the rotor and enigma classes. They work the same as the applet now. The next step is to start creating the main file which will generate decrypts to allow George and Matin time to work on the Language Recognition software. Still need to discuss "quick and dirty" attacks.
+
+To do:
+
+* Create "quick and dirty" attacks
+* Start the main classes processes for generation decryptions\
+
+Finished:
+
+* The Rotor class
+* The Enigma class
