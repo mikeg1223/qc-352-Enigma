@@ -37,14 +37,13 @@ class Rotor:
     Returns:
         None
     '''
-    def __init__(self, first: bool, rotorNumber: int, ringSetting: int):
+    def __init__(self, first: bool, rotorNumber: int, ringSetting: int, isMid = False):
 
         # setting variables
         self.isFirst = first
         self.isSet = False
         self.ring = ringSetting
-        # self.permForward = {}
-        # self.permBackwards = {}
+        self.isMid = isMid
         self.perm = Rotor.rotors[rotorNumber-1][Rotor.PERM]
         self.notch = Rotor.rotors[rotorNumber-1][Rotor.NOTCH]
         self.rotorNumber = rotorNumber
@@ -129,6 +128,11 @@ class Rotor:
             bvalue = False
             if rot:
                 bvalue = self.rotate()
+            elif isForward and self.isMid:
+                if self.currentRotation == self.notch[0]:
+                    bvalue = self.rotate()
+                elif len(self.notch) == 2 and self.currentRotation == self.notch[1]:
+                    bvalue = self.rotate()
             if isForward:
                 return (self.perm[ord(input) - 97], bvalue)
             return (chr(self.perm.find(input)+97), bvalue)
@@ -182,7 +186,7 @@ class Enigma:
     '''
     def setRotors(self, fast: int, fastRing: int, mid: int, midRing: int, slow: int, slowRing: int):
         self.rotors["fast"] = Rotor(True, fast, fastRing)
-        self.rotors["middle"] = Rotor(False, mid, midRing)
+        self.rotors["middle"] = Rotor(False, mid, midRing, True)
         self.rotors["slow"] = Rotor(False, slow, slowRing)
         self.isSet = True
 
@@ -320,8 +324,8 @@ class Enigma:
 # program runs from below 
 if __name__ == "__main__":
     e = Enigma()
-    e.setRotors(1, 3, 2, 0, 3, 0)
-    s = "fuckaroundandfindout"
+    e.setRotors(6, 0, 2, 0, 3, 0)
+    s = "fuckaroundandfindoutthisishowwedoitthisishowwedoitthisishowwedoit"
     out = e.encryptString(s)
     print(out)
     s = out
