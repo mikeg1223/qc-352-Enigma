@@ -3,10 +3,10 @@ import time as t
 
 
 
-class BiSinkovTest:
+class UniSinkovTest:
 
-    biGramTable = {}
-    numBigrams = 0
+    uniGramTable = {}
+    numUnigrams = 26
 
     def __init__(self):
         #blah
@@ -24,13 +24,11 @@ class BiSinkovTest:
     '''
     def computeSinkov(self, s):
         sinkov = 0
-        for i in range(1,len(s)):
-            bi = str(s[i] + s[i-1])
-            if  bi in self.biGramTable:
-                sinkov += np.log(self.biGramTable[bi])
+        for i in range(len(s)):
+            if  i in self.uniGramTable:
+                sinkov += np.log(self.uniGramTable[i])
             else:
-                sinkov += np.log(1/self.numBigrams)
-
+                sinkov += np.log(1/self.numUnigrams)
 
         return sinkov
 
@@ -47,7 +45,7 @@ class BiSinkovTest:
             Returns
                 nothing
     ''' 
-    def buildBigramTable(self, textFile):
+    def buildUnigramTable(self, textFile):
 
         count = 0
         with open(textFile, 'r', encoding="utf8") as f:
@@ -70,27 +68,25 @@ class BiSinkovTest:
 
                             # Here, we are filtering the characters out by skipping them
 
-                        prevChar = word[i-1].lower()    
                         currChar = word[i].lower()
                         
-                        if(ord(currChar)<97 or ord(currChar)>122 or ord(prevChar)<97 or ord(prevChar)>122):
+                        if(ord(currChar)<97 or ord(currChar)>122):
                             continue       
 
                         
                             #Here, we add this combination of 2 characters into the bigram frequency count
                         count = count+1
-                        biGram = prevChar+currChar 
 
-                        if self.biGramTable.__contains__(biGram): # If this exists in the dictionary already
-                            self.biGramTable[biGram] = self.biGramTable[biGram]+1   # Increment by 1
+                        if self.uniGramTable.__contains__(currChar): # If this exists in the dictionary already
+                            self.uniGramTable[currChar] = self.uniGramTable[currChar]+1   # Increment by 1
 
                         else:   #Else: this is the first occourence of this bigram
-                            self.biGramTable[biGram] = 1    # Start count at 1
+                            self.uniGramTable[currChar] = 1    # Start count at 1
 
 
         #Normalize the bigram to obtain its probability
-        for k in self.biGramTable.keys():
-            self.biGramTable[k] = self.biGramTable[k]/(count)
+        for k in self.uniGramTable.keys():
+            self.uniGramTable[k] = self.uniGramTable[k]/(count)
 
         self.numBigrams = count
 
@@ -98,13 +94,13 @@ class BiSinkovTest:
     '''
         This function outputs the bigram to a nice format into an outputFile
     '''
-    def outputBigramTable(self):
+    def outputUnigramTable(self):
 
-        o = open("outputBigramMap.txt","w")
+        o = open("outputUnigramMap.txt","w")
         o.write("{")
 
-        for b in self.biGramTable:
-            o.write ( "\n \""+b+"\" : "+ str(self.biGramTable[b]) +",")    
+        for b in self.uniGramTable:
+            o.write ( "\n \""+b+"\" : "+ str(self.uniGramTable[b]) +",")    
 
         o.write("\n}")
         o.close()
@@ -151,7 +147,7 @@ class BiSinkovTest:
 
             print("Done loading page " + str(count) )
 
-        with open( str("unplugged_BiSinkov_results.txt"), "w") as file:
+        with open( str("unplugged_UniSinkov_results.txt"), "w") as file:
             for result in l:
                 file.write(str(result[0])+" "+str(result[1]) + "\n")
 
@@ -189,8 +185,8 @@ class BiSinkovTest:
 if __name__ == "__main__":
 
     start = t.time()
-    l = BiSinkovTest()
-    l.buildBigramTable("sample.txt")
+    l = UniSinkovTest()
+    l.buildUnigramTable("sample.txt")
     l.pluglessTest()
     print("Time Elapsed (seconds)\n" + str(t.time() - start))
 
