@@ -108,21 +108,23 @@ class BiSinkovTest:
         o.write("\n}")
         o.close()
 
+
+    def sortFunc(self, arg):
+        return arg[1]
+
     def pluglessTest(self):
         
         #Useful variables if we split the work and designate specific files per computer
         numLines = 0
         score = 0
-        rotorScore = {}
-        topScores = {}
+        l = []
 
-        for count in range(1,2):
-            inputFileName = "pluglessResult_" + str( count.zfill(2) ) + ".txt"
+
+        for count in range(1,):
+            inputFileName = "../pluglessResults_" + str( count ).zfill(2) + ".txt"
             with open(inputFileName,"r") as f:
 
-                l = []
-
-
+                score = 0
                 for line in f:
 
                     numLines+=1     #Used to normalize the data later
@@ -144,15 +146,14 @@ class BiSinkovTest:
                     rotorConfig = str(words[0]) + str(words[1].zfill(2)) + str(words[2]) + str(words[3].zfill(2)) + str(words[4]) + str(words[5].zfill(2))                    
                     l.append( (rotorConfig, score))
 
-        l.sort(key = sortFunc, reverse=True)
+        l.sort(key = lambda x: x[1], reverse=True)
+        l = l[:5000]
 
-        with open( str("unplugged_BiSinkov_results_" + str(count).zfill(2) + ".txt"), "w") as file:
-            for result in l[:5000]:
-                file.write(l[0]+" "+str(l[1]))
+        with open( str("unplugged_BiSinkov_results.txt"), "w") as file:
+            for result in l:
+                file.write(str(result[0])+" "+str(result[1]) + "\n")
 
 
-    def sortFunc(arg):
-        return arg[1]
 
 
     def plugTest(self):
@@ -192,6 +193,5 @@ if __name__ == "__main__":
     l = BiSinkovTest()
     l.buildBigramTable("sample.txt")
     l.outputBigramTable()
-    
-    l.runTest()
+    l.pluglessTest()
 
