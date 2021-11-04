@@ -1,4 +1,5 @@
 import numpy as np
+import  time
 
 
 
@@ -120,8 +121,8 @@ class BiSinkovTest:
         l = []
 
 
-        for count in range(1,):
-            inputFileName = "../pluglessResults_" + str( count ).zfill(2) + ".txt"
+        for count in range(1,57):
+            inputFileName = "Resources/pluglessResults_" + str( count ).zfill(2) + ".txt"
             with open(inputFileName,"r") as f:
 
                 score = 0
@@ -146,10 +147,11 @@ class BiSinkovTest:
                     rotorConfig = str(words[0]) + str(words[1].zfill(2)) + str(words[2]) + str(words[3].zfill(2)) + str(words[4]) + str(words[5].zfill(2))                    
                     l.append( (rotorConfig, score))
 
-        l.sort(key = lambda x: x[1], reverse=True)
-        l = l[:5000]
+            l.sort(key = lambda x: x[1], reverse=True)
+            l = l[:5000]
+            print("finished page: ", count)
 
-        with open( str("unplugged_BiSinkov_results.txt"), "w") as file:
+        with open("Resources/unplugged_BiSinkov_results.txt", "w") as file:
             for result in l:
                 file.write(str(result[0])+" "+str(result[1]) + "\n")
 
@@ -190,8 +192,11 @@ class BiSinkovTest:
 
 # program runs from below 
 if __name__ == "__main__":
+
+    t = time.time()
     l = BiSinkovTest()
-    l.buildBigramTable("sample.txt")
+    l.buildBigramTable("Resources/sample.txt")
     l.outputBigramTable()
     l.pluglessTest()
+    print("time: ", time.time() - t)
 

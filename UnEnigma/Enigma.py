@@ -20,7 +20,6 @@ class Rotor:
               {PERM:"vzbrgityupsdnhlxawmjqofeck", NOTCH: [25]}, 
               {PERM:"jpgvoumfyqbenhzrdkasxlictw", NOTCH: [12, 25]},
               {PERM:"nzjhgrcxmyswboufaivlpekqdt", NOTCH: [12, 25]}, 
-              {PERM:"nzjhgrcxmyswboufaivlpekqdt", NOTCH: [12, 25]},
               {PERM:"fkqhtlxocbjspdzramewniuygv", NOTCH: [12, 25]}]
 
 

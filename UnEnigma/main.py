@@ -20,6 +20,9 @@ def createDecryptFile(filename, x, y, ctext):
 
 cipherText = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
 
+
+'''
+
 fname = "pluglessResults"
 ext = ".txt"
 currentfile = 0
@@ -30,4 +33,40 @@ for x in range(1,9):
             continue
         currentfile += 1
         createDecryptFile(fname+"_"+str(currentfile).zfill(2)+ext, x, y, cipherText)
-        
+'''
+
+
+'''
+d = {}
+
+with open("Resources/unplugged_BiSinkov_results.txt", "r") as file:
+    for line in file:
+        temp = line.split()
+        e.setRotors(int(temp[0][0]), int(temp[0][1:3]), int(temp[0][3]), int(temp[0][4:6]), int(temp[0][6]), int(temp[0][7:9]))
+        d[temp[0]] = (e.encryptString(cipherText), temp[1])
+
+res = []
+
+for _ in d:
+    if d[_][0][-3] =="k" or d[_][0][-2] == "d" or d[_][0][-1] == "b":
+        res.append((d[_][0], d[_][1], _)) 
+
+with open("Resources/possibleCribContaining.txt", "w") as file:
+    for _ in res:
+        file.write(_[2] + " " + _[1] + " " + _[0] + "\n")
+
+'''
+
+'''
+res = []
+
+with open("Resources/possibleCribContaining.txt", "r") as file:
+    for line in file:
+        temp = line.split()
+        if (temp[2][-3] == "k" and temp[2][-2] == "d") or (temp[2][-3] == "k" and temp[2][-1] == "b") or (temp[2][-2] == "d" and temp[2][-1] == "b"):
+            res.append(line)
+
+with open("Resources/possibleCribContaining2.txt", "w") as file:
+    for _ in res:
+        file.write(_)
+'''
