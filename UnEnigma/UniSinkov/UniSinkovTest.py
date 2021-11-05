@@ -6,8 +6,7 @@ class UniSinkovTest:
     uniGramTable = {}
     numChars = 0
     def __init__(self):
-        #blah
-        pass
+        self.readUnigramTable("../Resources/sampledUnigramMap.txt")
 
 
     '''
@@ -68,21 +67,21 @@ class UniSinkovTest:
                     for i in range(0, len(line)): # Traverse each unigram
 
                             # Here, we are filtering the characters out by skipping them
-                        currChar = line[i].lower()
+                        char = line[i].lower()
                         
 
-                        if(ord(currChar)<97 or ord(currChar)>122 ):
+                        if(ord(char)<97 or ord(char)>122 ):
                             continue       
 
                         
                             #Here, we add this comunination of 2 characters into the unigram frequency count
                         count = count+1
 
-                        if self.uniGramTable.__contains__(currChar): # If this exists in the dictionary already
-                            self.uniGramTable[currChar] = self.uniGramTable[currChar]+1   # Increment by 1
+                        if self.uniGramTable.__contains__(char): # If this exists in the dictionary already
+                            self.uniGramTable[char] = self.uniGramTable[char]+1   # Increment by 1
 
                         else:   #Else: this is the first occourence of this unigram
-                            self.uniGramTable[currChar] = 1    # Start count at 1
+                            self.uniGramTable[char] = 1    # Start count at 1
 
 
         #Normalize the unigram to obtain its probability
@@ -95,7 +94,8 @@ class UniSinkovTest:
 
         with open(textFile, "r") as f:
 
-            header = f.readline().strip()
+            #Read from the header of sample file
+            self.numChars = f.readline()
 
             for line in f:
 
