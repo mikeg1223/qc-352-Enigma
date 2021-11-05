@@ -57,7 +57,7 @@ class ICUnigram:
 
                     rotorConfig = str(words[0]) + str(words[1].zfill(2)) + str(words[2]) + str(words[3].zfill(2)) + str(words[4]) + str(words[5].zfill(2))                    
                     
-                    l.append( (rotorConfig, score))
+                    l.append( (rotorConfig, score, words[6]))
 
             l.sort(key = lambda x: x[1],reverse=True)
             l = l[:5000]
@@ -65,7 +65,7 @@ class ICUnigram:
 
         with open("IC_uni_output.txt", "w") as file:
             for result in l:
-                file.write(str(result[0])+" "+str(result[1]) + "\n")
+                file.write(str(result[0])+" "+str(result[1]) + " " + result[2] + "\n")
 
             
 # program runs from below 
