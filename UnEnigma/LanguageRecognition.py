@@ -3,7 +3,7 @@ from Enigma.Enigma import Enigma
 from BiSinkov.BiSinkovTest import BiSinkovTest
 from UniSinkov.UniSinkovTest import UniSinkovTest
 import IOC_bigram
-
+import time
 
 class LanguageRecognition:
 
@@ -14,6 +14,7 @@ class LanguageRecognition:
 
 
         with open("../Resources/test.txt", "r") as f:
+
         #with open("../Resources/pluglessResults/pluglessResults_" + "01" + ".txt", "r") as f:
             with open("Output_LanguageRecognition.txt","w") as o:
 
@@ -69,10 +70,10 @@ class LanguageRecognition:
                         alpha = alpha[:a] + alpha[a+1:b] + alpha[b+1:]
 
                     # write output for this line
-                        o.write(
-                            str(words[0])+" " + str(words[1])+" "+str(words[2]) + " " + str(words[3]) + " " + str(words[4]) + " " + str(words[5] + " " )
-                            + decrypt + " " + str(plugs) + " " + lastString + "\n"
-                        ) 
+                    o.write(
+                        str(words[0])+" " + str(words[1])+" "+str(words[2]) + " " + str(words[3]) + " " + str(words[4]) + " " + str(words[5] + " " )
+                        + decrypt + " " + str(plugs) + " " + lastString + "\n"
+                    ) 
 
         
                 #and then you would store in a new text file the rotor settings, plugs, and updated decrypt
@@ -80,4 +81,6 @@ class LanguageRecognition:
 
 # program runs from below 
 if __name__ == "__main__":
+    start = time.time()
     l = LanguageRecognition()
+    print(time.time() - start)
