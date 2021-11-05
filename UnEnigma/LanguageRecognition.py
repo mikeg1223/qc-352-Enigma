@@ -12,20 +12,20 @@ class LanguageRecognition:
 
     def tryPlugs(self):
 
-
-        with open("../Resources/test.txt", "r") as f:
-
+        #with open("../Resources/test.txt", "r") as f:
+        with open("../Resources/possibleCribContaining.txt", "r") as f:
         #with open("../Resources/pluglessResults/pluglessResults_" + "01" + ".txt", "r") as f:
             with open("Output_LanguageRecognition.txt","w") as o:
 
                 for line in f:
 
+
                     alpha = "abcdefghijklmnopqrstuvwxyz"
 
                     line = line.strip()
                     words = line.split()
-                    decrypt = words[6]
-                    cipher = words[7]
+                    decrypt = words[2]
+                    cipher = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
 
                     plugs = []
                     lastString = ""
@@ -44,7 +44,7 @@ class LanguageRecognition:
                                     
                             #re-initialize enigma object with rotors
                                 e = Enigma()
-                                e.setRotors(int(words[0]), int(words[1]), int(words[2]), int(words[3]), int(words[4]), int(words[5]))
+                                e.setRotors(int(words[0][0]), int(words[0][1]+words[0][2]), int(words[0][3]), int(words[0][4]+words[0][5]), int(words[0][6]), int(words[0][7] + words[0][8]))
 
                                 #not sure how to iterate through dictionary but I want to set found plugs
                                 for pair in plugs:
@@ -71,8 +71,7 @@ class LanguageRecognition:
 
                     # write output for this line
                     o.write(
-                        str(words[0])+" " + str(words[1])+" "+str(words[2]) + " " + str(words[3]) + " " + str(words[4]) + " " + str(words[5] + " " )
-                        + decrypt + " " + str(plugs) + " " + lastString + "\n"
+                        str(words[0])+" "+ decrypt + " " + str(plugs) + " " + lastString + "\n"
                     ) 
 
         
