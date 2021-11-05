@@ -201,10 +201,10 @@ class Enigma:
     def setSteckerboardPlug(self, letter1, letter2):
 
         if self.steckerBoard[letter1] != letter1:
-            print("stecker", letter1, "to", letter2, "not added.", letter1, "is already steckered")
+            #print("stecker", letter1, "to", letter2, "not added.", letter1, "is already steckered")
             return
         elif self.steckerBoard[letter2] != letter2:
-            print("stecker", letter1, "to", letter2, "not added.", letter2, "is already steckered")
+            #print("stecker", letter1, "to", letter2, "not added.", letter2, "is already steckered")
             return 
         else:
             self.steckerBoard[letter1] = letter2
