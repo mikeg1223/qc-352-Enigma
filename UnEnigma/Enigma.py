@@ -323,10 +323,11 @@ class Enigma:
 # program runs from below 
 if __name__ == "__main__":
     e = Enigma()
-    e.setRotors(6, 0, 2, 0, 3, 0)
-    s = "fuckaroundandfindoutthisishowwedoitthisishowwedoitthisishowwedoit"
-    out = e.encryptString(s)
-    print(out)
-    s = out
-    out = e.encryptString(s)
-    print(out)
+    with open("../Resources/possibleCribContaining2.txt", "r") as f:
+        for line in f:
+            words = line.split()
+            
+            e.setRotors(int(line[0]),int(line[1]+line[2]),int(line[3]),int(line[4]+line[5]),int(line[6]),int(line[7]+line[8]))
+            s = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
+            out = e.encryptString(s)
+            print(out)

@@ -1,13 +1,10 @@
 import numpy as np
-import time as t
-
-
+import  time
 
 class UniSinkovTest:
 
     uniGramTable = {}
-    numUnigrams = 26
-
+    numChars = 0
     def __init__(self):
         #blah
         pass
@@ -15,7 +12,7 @@ class UniSinkovTest:
 
     '''
         This function will read in a line of text and compute the Sinkov Statistic for this string,
-        based off our biGramTable that we created already.
+        based off our UniGramTable that we created already.
 
         Parameters:
             string s -- the decrypt candidate 
@@ -24,11 +21,12 @@ class UniSinkovTest:
     '''
     def computeSinkov(self, s):
         sinkov = 0
-        for i in range(len(s)):
-            if  i in self.uniGramTable:
-                sinkov += np.log(self.uniGramTable[i])
+        for i in range(1,len(s)):
+            uni = str( s[i] )
+            if  uni in self.uniGramTable:
+                sinkov += np.log(self.uniGramTable[uni])
             else:
-                sinkov += np.log(1/self.numUnigrams)
+                sinkov += np.log(1/self.numChars)
 
         return sinkov
 
@@ -36,7 +34,7 @@ class UniSinkovTest:
     '''
             This function does 3 things:
                 1. reads through the sample textFile
-                2. stores the frequencies in the biGramTable
+                2. stores the frequencies in the uniGramTable
                 3. writes it to an outfile so it can be copy/pasted easily
             
             Parameters:
@@ -60,51 +58,66 @@ class UniSinkovTest:
                                 - Must be [a-z] (ascii 97 to 122)
                 '''
 
-                line = line.strip() 
-                words = line.split(' ')   
+                line = line.strip()
+                line = line.replace(" ", "")
 
-                for word in words: 
-                    for i in range(1, len(word)): # Traverse each bigram
+                for char in line:
+
+                    self.numChars = self.numChars+1
+
+                    for i in range(0, len(line)): # Traverse each unigram
 
                             # Here, we are filtering the characters out by skipping them
-
-                        currChar = word[i].lower()
+                        currChar = line[i].lower()
                         
-                        if(ord(currChar)<97 or ord(currChar)>122):
+
+                        if(ord(currChar)<97 or ord(currChar)>122 ):
                             continue       
 
                         
-                            #Here, we add this combination of 2 characters into the bigram frequency count
+                            #Here, we add this comunination of 2 characters into the unigram frequency count
                         count = count+1
 
                         if self.uniGramTable.__contains__(currChar): # If this exists in the dictionary already
                             self.uniGramTable[currChar] = self.uniGramTable[currChar]+1   # Increment by 1
 
-                        else:   #Else: this is the first occourence of this bigram
+                        else:   #Else: this is the first occourence of this unigram
                             self.uniGramTable[currChar] = 1    # Start count at 1
 
 
-        #Normalize the bigram to obtain its probability
+        #Normalize the unigram to obtain its probability
         for k in self.uniGramTable.keys():
             self.uniGramTable[k] = self.uniGramTable[k]/(count)
 
-        self.numBigrams = count
+        self.numChars = count
 
+    def readUnigramTable(self,textFile):
+
+        with open(textFile, "r") as f:
+
+            header = f.readline().strip()
+
+            for line in f:
+
+                line = line.strip()
+                words = line.split(" ")
+
+                if len(words) < 2:
+                    print(words)
+                else:
+                    self.uniGramTable[words[0]] = float(words[1])
 
     '''
-        This function outputs the bigram to a nice format into an outputFile
+        This function outputs the unigram to a nice format into an outputFile
     '''
     def outputUnigramTable(self):
 
-        o = open("outputUnigramMap.txt","w")
-        o.write("{")
-
+        o = open("sampledUnigramMap.txt","w")
+        o.write(str(self.numChars))
         for b in self.uniGramTable:
-            o.write ( "\n \""+b+"\" : "+ str(self.uniGramTable[b]) +",")    
+            o.write ( "\n" + b + " " + str(self.uniGramTable[b]) )    
 
-        o.write("\n}")
         o.close()
-
 
     def sortFunc(self, arg):
         return arg[1]
@@ -115,10 +128,8 @@ class UniSinkovTest:
         score = 0
         l = []
 
-
-        for count in range(1,57):
-            inputFileName = "../pluglessResults_" + str( count ).zfill(2) + ".txt"
-
+        for count in range(1,56):
+            inputFileName = "../../Resources/pluglessResults/pluglessResults_" + str( count ).zfill(2) + ".txt"
             with open(inputFileName,"r") as f:
 
                 score = 0
@@ -144,49 +155,21 @@ class UniSinkovTest:
 
             l.sort(key = lambda x: x[1], reverse=True)
             l = l[:5000]
+            print("finished page: ", count)
 
-            print("Done loading page " + str(count) )
-
-        with open( str("unplugged_UniSinkov_results.txt"), "w") as file:
+        with open("UniSinkov_results.txt", "w") as file:
             for result in l:
                 file.write(str(result[0])+" "+str(result[1]) + "\n")
-
-
-
-
-    def plugTest(self):
-
-        alphabet = "abcdefghijklmnopqrstuvwxyz"
-        count=1
-
-        for count in range(1,53):
-            inputFileName = "blah" + str(count) + ".txt"
-            f = open(inputFileName,"r")
-
-            for c1 in alphabet:
-                for c2 in alphabet:
-
-                    for line in f:
-                        line = line.strip() #Trim Whitespace if there
-
-                        '''
-                            words[0] = Fast Rotor     words[1] = Fast Rotor Ring 
-                            words[2] = Mid rotor      words[3] = Mid rotor ring
-                            words[4] = Slow Rotor     words[5] = slow rotor ring
-                                            words[6] = decrypt
-                        '''
-
-                        words = line.split(" ") 
-                        score = self.computeSinkov(words[6])
-
 
 
 # program runs from below 
 if __name__ == "__main__":
 
-    start = t.time()
+    t = time.time()
     l = UniSinkovTest()
-    l.buildUnigramTable("sample.txt")
+    #l.buildUnigramTable("../Resources/sample.txt")
+    #l.outputUnigramTable()
+    l.readUnigramTable("../../Resources/sampledUnigramMap.txt")
     l.pluglessTest()
-    print("Time Elapsed (seconds)\n" + str(t.time() - start))
+    print("time: ", time.time() - t)
 

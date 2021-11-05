@@ -7,7 +7,7 @@ class BiSinkovTest:
 
     biGramTable = {}
     numBigrams = 0
-
+    numChars = 0
     def __init__(self):
         #blah
         pass
@@ -62,16 +62,16 @@ class BiSinkovTest:
                                 - Must be [a-z] (ascii 97 to 122)
                 '''
 
-                line = line.strip() 
-                words = line.split(' ')   
-
-                for word in words: 
-                    for i in range(1, len(word)): # Traverse each bigram
+                line = line.strip()
+                line = line.replace(" ", "")
+                for char in line:
+                    self.numChars = self.numChars+1
+                    for i in range(1, len(line)): # Traverse each bigram
 
                             # Here, we are filtering the characters out by skipping them
 
-                        prevChar = word[i-1].lower()    
-                        currChar = word[i].lower()
+                        prevChar = line[i-1].lower()    
+                        currChar = line[i].lower()
                         
                         if(ord(currChar)<97 or ord(currChar)>122 or ord(prevChar)<97 or ord(prevChar)>122):
                             continue       
@@ -94,19 +94,28 @@ class BiSinkovTest:
 
         self.numBigrams = count
 
+    def readBigramTable(self,textFile):
+        with open(textFile, "r") as f:
+
+            header = f.readline().strip().split()
+            self.numBigrams = int(header[0]) 
+            self.numChars = int(header[1])
+
+            for line in f:
+                line = line.strip()
+                words = line.split(" ")
+                self.biGramTable[words[0]] = float(words[1])
 
     '''
         This function outputs the bigram to a nice format into an outputFile
     '''
     def outputBigramTable(self):
 
-        o = open("outputBigramMap.txt","w")
-        o.write("{")
-
+        o = open("sampledBigramMap.txt","w")
+        o.write(str(self.numBigrams) + " " + str(self.numChars))
         for b in self.biGramTable:
-            o.write ( "\n \""+b+"\" : "+ str(self.biGramTable[b]) +",")    
+            o.write ( "\n" + b + " " + str(self.biGramTable[b]) )    
 
-        o.write("\n}")
         o.close()
 
 
@@ -119,9 +128,9 @@ class BiSinkovTest:
         score = 0
         l = []
 
+        for count in range(1,3):
 
-        for count in range(1,57):
-            inputFileName = "Resources/pluglessResults_" + str( count ).zfill(2) + ".txt"
+            inputFileName = "../../Resources/pluglessResults/pluglessResults_" + str( count ).zfill(2) + ".txt"
             with open(inputFileName,"r") as f:
 
                 score = 0
@@ -149,38 +158,9 @@ class BiSinkovTest:
             l = l[:5000]
             print("finished page: ", count)
 
-        with open("Resources/unplugged_BiSinkov_results.txt", "w") as file:
+        with open("BiSinkov_results.txt", "w") as file:
             for result in l:
                 file.write(str(result[0])+" "+str(result[1]) + "\n")
-
-
-
-
-    def plugTest(self):
-
-        alphabet = "abcdefghijklmnopqrstuvwxyz"
-        count=1
-
-        for count in range(1,53):
-            inputFileName = "blah" + str(count) + ".txt"
-            f = open(inputFileName,"r")
-
-            for c1 in alphabet:
-                for c2 in alphabet:
-
-                    for line in f:
-                        line = line.strip() #Trim Whitespace if there
-
-                        '''
-                            words[0] = Fast Rotor     words[1] = Fast Rotor Ring 
-                            words[2] = Mid rotor      words[3] = Mid rotor ring
-                            words[4] = Slow Rotor     words[5] = slow rotor ring
-                                            words[6] = decrypt
-                        '''
-
-                        words = line.split(" ") 
-                        score = self.computeSinkov(words[6])
-
 
 
 # program runs from below 
@@ -188,8 +168,9 @@ if __name__ == "__main__":
 
     t = time.time()
     l = BiSinkovTest()
-    l.buildBigramTable("Resources/sample.txt")
-    l.outputBigramTable()
+    #l.buildBigramTable("../../Resources/sample.txt")
+    #l.outputBigramTable()
+    l.readBigramTable("../../Resources/sampledBigramMap.txt")
     l.pluglessTest()
     print("time: ", time.time() - t)
 
