@@ -8,17 +8,21 @@ import time
 class LanguageRecognition:
 
     def __init__(self):
-        self.tryPlugs()
+        pass
 
     def tryPlugs(self):
 
+        count = 0
+        with open("IOC_unigram/IC_uni_output.txt") as f:
         #with open("../Resources/test.txt", "r") as f:
-        with open("../Resources/possibleCribContaining.txt", "r") as f:
+        #with open("../Resources/possibleCribContaining.txt", "r") as f:
         #with open("../Resources/pluglessResults/pluglessResults_" + "01" + ".txt", "r") as f:
-            with open("Output_LanguageRecognition.txt","w") as o:
+            with open("Output_LangRec_OnTop5000IOC.txt","w") as o:
 
                 for line in f:
 
+
+                    
 
                     alpha = "abcdefghijklmnopqrstuvwxyz"
 
@@ -78,8 +82,10 @@ class LanguageRecognition:
                 #and then you would store in a new text file the rotor settings, plugs, and updated decrypt
 
 
+
 # program runs from below 
 if __name__ == "__main__":
     start = time.time()
     l = LanguageRecognition()
+    l.tryPlugs()
     print(time.time() - start)
