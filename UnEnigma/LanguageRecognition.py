@@ -1,5 +1,5 @@
 import BiSinkov
-from Enigma.Enigma import Enigma
+from Enigma import Enigma
 from BiSinkov.BiSinkovTest import BiSinkovTest
 from UniSinkov.UniSinkovTest import UniSinkovTest
 import IOC_bigram
