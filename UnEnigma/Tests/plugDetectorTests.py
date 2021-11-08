@@ -13,6 +13,7 @@ class testCases:
         count = 0
         ret_String = ""
         while count < 10:
+            enig.wipe()
             alpha = "abcdefghijklmnopqrstuvwxyz"
             rotors = []
             rings = []
@@ -88,7 +89,7 @@ class testCases:
                         enig.resetSteckerboard()
                         for pair in proposedPlugs:
                             enig.setSteckerboardPlug(pair[0], pair[1])
-                            
+
                         
                         enig.setSteckerboardPlug(alpha[x], alpha[y])
 
@@ -119,10 +120,11 @@ if __name__ == "__main__":
     e = Enigma()
     tc = testCases()
 
-    ''' with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
+    with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
         for line in file:
             with open("UnEnigma/Tests/testPairs.txt", "a") as file2:
-                t.generateSettingsFile(line.strip(), e, file2)
+                tc.generateSettingsFile(line.strip(), e, file2)
+    
     '''
     res = 0
     t = None
@@ -132,4 +134,5 @@ if __name__ == "__main__":
         print("time elapsed (s): ", time.time() - t)
 
     print(res)
+    '''
 

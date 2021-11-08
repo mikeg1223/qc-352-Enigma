@@ -78,11 +78,11 @@ if __name__ == "__main__":
     e = Enigma()
     tc = tcs()
 
-    ''' with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
+    '''with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
         for line in file:
             with open("UnEnigma/Tests/testPairs.txt", "a") as file2:
                 t.generateSettingsFile(line.strip(), e, file2)
-    '''
+   '''
     res = 0
     t = None
     with open("UnEnigma/Tests/testPairs.txt", "r") as file:
@@ -91,3 +91,4 @@ if __name__ == "__main__":
         print("time elapsed (s): ", time.time() - t)
 
     print(res)
+    
