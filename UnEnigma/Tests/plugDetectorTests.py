@@ -1,6 +1,6 @@
 import random
 from Enigma import Enigma
-from UniSinkovTest import UniSinkovTest
+from UniSinkov.UniSinkovTest import UniSinkovTest
 import time
 
 class testCases:
