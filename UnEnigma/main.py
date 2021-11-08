@@ -58,6 +58,7 @@ with open("Resources/possibleCribContaining.txt", "w") as file:
 '''
 
 '''
+
 res = []
 
 with open("Resources/possibleCribContaining.txt", "r") as file:
@@ -69,4 +70,40 @@ with open("Resources/possibleCribContaining.txt", "r") as file:
 with open("Resources/possibleCribContaining2.txt", "w") as file:
     for _ in res:
         file.write(_)
+'''
+
+
+
+'''
+    #This was a method i manually edited 7 times to fill our allKDB_0x.txt files with cribs
+
+
+fname = "../Resources/pluglessResults/pluglessResults_"
+decrypt = ""
+
+def getAllKDB():
+    with open("../Resources/all_possible_Crib/allKDB_07.txt", "w") as o:
+
+        count = 0
+        for i in range (49,57):
+
+            fileName = fname + str(i).zfill(2) + ".txt"
+            with open(fileName, "r") as f:
+
+                for line in f:
+
+                    words = line.split()
+                    decrypt = words[6]
+                    if( decrypt[62] == "k" or decrypt[63] == "d" or decrypt[64] == "b" ):
+                        count = count+1
+                        o.write(line)
+                        if(count > 100000):
+                            print("Done with the page of KDB at this spot:")
+                            print("File: " + fileName)
+                            print(decrypt)
+                            return
+
+
+getAllKDB()
+
 '''
