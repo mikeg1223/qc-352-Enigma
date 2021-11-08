@@ -397,6 +397,7 @@ class LanguageRecognition:
 # program runs from below 
 if __name__ == "__main__":
     l = LanguageRecognition()
+    
     '''
     l.createUnigramScoring("Resources/Frankenstein.txt")
     l.createBigramScoring("Resources/Frankenstein.txt")
