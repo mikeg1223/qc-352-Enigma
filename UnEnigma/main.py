@@ -22,10 +22,11 @@ def createDecryptFile(filename, x, y, ctext):
 
 
 cipherText = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
+e = Enigma()
 
-
+# this code block generates plugess decrpytions
 '''
-fname = "pluglessResults"
+fname = "Resources/pluglessResults/pluglessResults"
 ext = ".txt"
 currentfile = 0
 
@@ -38,7 +39,6 @@ for x in range(1,9):
 '''
 
 '''
-e = Enigma()
 d = {}
 
 with open("Resources/unplugged_IOC_unigram_results.txt", "r") as file:
@@ -74,21 +74,25 @@ with open("Resources/possibleCribContaining2.txt", "w") as file:
 
 '''
 
-if __name__ == "__main__":
-    e = Enigma()
-    tc = tcs()
+# this generates random settings for the enigma, and encrypts a string, then writes the plaintext, settings/key, and ciphertext to a file
+'''with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
+    for line in file:
+        with open("UnEnigma/Tests/testPairs.txt", "a") as file2:
+            t.generateSettingsFile(line.strip(), e, file2)
+'''
 
-    '''with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
-        for line in file:
-            with open("UnEnigma/Tests/testPairs.txt", "a") as file2:
-                t.generateSettingsFile(line.strip(), e, file2)
-   '''
-    res = 0
-    t = None
-    with open("UnEnigma/Tests/testPairs.txt", "r") as file:
-        t = time.time()
-        res = tc.runTrials(e, file)
-        print("time elapsed (s): ", time.time() - t)
 
-    print(res)
-    
+# this code will run the test cases for our initial hill climbing
+'''
+tc = tcs()
+res = 0
+t = None
+with open("UnEnigma/Tests/testPairs.txt", "r") as file:
+    t = time.time()
+    res = tc.runTrials(e, file)
+    print("time elapsed (s): ", time.time() - t)
+
+print(res)
+'''
+
+
