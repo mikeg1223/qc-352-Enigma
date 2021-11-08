@@ -1,6 +1,6 @@
 import random
-from UnEnigma.Enigma import Enigma
-from UniSinkov.UniSinkovTest import UniSinkovTest
+from Enigma import Enigma
+from UniSinkovTest import UniSinkovTest
 import time
 
 class testCases:
@@ -65,8 +65,8 @@ class testCases:
             numTrials += 1
 
             information = line.strip().split()
-            enigmaSettings = line[1]
-            cipherText = line[2]
+            enigmaSettings = information[1]
+            cipherText = information[2]
             rotorSettings = [int(enigmaSettings[0]), int(enigmaSettings[1:3]), int(enigmaSettings[3]), int(enigmaSettings[4:6]),
                     int(enigmaSettings[6]), int(enigmaSettings[7:9])]
             knownPlugSettings = [enigmaSettings[9:11], enigmaSettings[11:13], enigmaSettings[13:15], enigmaSettings[15:17],
@@ -83,11 +83,12 @@ class testCases:
                 best = ""
                 a = None
                 b = None
-                for x in range(len(alpha)):
-                    for y in range(x+1, len(alpha+1)):
+                for x in range(len(alpha)-1):
+                    for y in range(x+1, len(alpha)):
                         enig.resetSteckerboard()
-                        for pair in promote_types:
+                        for pair in proposedPlugs:
                             enig.setSteckerboardPlug(pair[0], pair[1])
+                            
                         
                         enig.setSteckerboardPlug(alpha[x], alpha[y])
 
@@ -95,8 +96,8 @@ class testCases:
                         score = us.computeSinkov(s)
                         if score > currMax:
                             currMax = score
-                            a = alpha.find(x)
-                            b = alpha.find(y)
+                            a = x
+                            b = y
                             best = alpha[x] + alpha[y]
                 
                 proposedPlugs.append(best)

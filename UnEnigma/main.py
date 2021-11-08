@@ -1,4 +1,7 @@
 from Enigma import Enigma
+import time
+
+from Tests.plugDetectorTests import testCases as tcs
 '''
 Each file will contain 105,456 possible decrpytions
 Write decrpytions in the format:
@@ -22,7 +25,6 @@ cipherText = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
 
 
 '''
-
 fname = "pluglessResults"
 ext = ".txt"
 currentfile = 0
@@ -35,11 +37,11 @@ for x in range(1,9):
         createDecryptFile(fname+"_"+str(currentfile).zfill(2)+ext, x, y, cipherText)
 '''
 
-
 '''
+e = Enigma()
 d = {}
 
-with open("Resources/unplugged_BiSinkov_results.txt", "r") as file:
+with open("Resources/unplugged_IOC_unigram_results.txt", "r") as file:
     for line in file:
         temp = line.split()
         e.setRotors(int(temp[0][0]), int(temp[0][1:3]), int(temp[0][3]), int(temp[0][4:6]), int(temp[0][6]), int(temp[0][7:9]))
@@ -55,9 +57,8 @@ with open("Resources/possibleCribContaining.txt", "w") as file:
     for _ in res:
         file.write(_[2] + " " + _[1] + " " + _[0] + "\n")
 
-'''
 
-'''
+
 
 res = []
 
@@ -70,40 +71,23 @@ with open("Resources/possibleCribContaining.txt", "r") as file:
 with open("Resources/possibleCribContaining2.txt", "w") as file:
     for _ in res:
         file.write(_)
-'''
-
-
 
 '''
-    #This was a method i manually edited 7 times to fill our allKDB_0x.txt files with cribs
 
+if __name__ == "__main__":
+    e = Enigma()
+    tc = tcs()
 
-fname = "../Resources/pluglessResults/pluglessResults_"
-decrypt = ""
+    ''' with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
+        for line in file:
+            with open("UnEnigma/Tests/testPairs.txt", "a") as file2:
+                t.generateSettingsFile(line.strip(), e, file2)
+    '''
+    res = 0
+    t = None
+    with open("UnEnigma/Tests/testPairs.txt", "r") as file:
+        t = time.time()
+        res = tc.runTrials(e, file)
+        print("time elapsed (s): ", time.time() - t)
 
-def getAllKDB():
-    with open("../Resources/all_possible_Crib/allKDB_07.txt", "w") as o:
-
-        count = 0
-        for i in range (49,57):
-
-            fileName = fname + str(i).zfill(2) + ".txt"
-            with open(fileName, "r") as f:
-
-                for line in f:
-
-                    words = line.split()
-                    decrypt = words[6]
-                    if( decrypt[62] == "k" or decrypt[63] == "d" or decrypt[64] == "b" ):
-                        count = count+1
-                        o.write(line)
-                        if(count > 100000):
-                            print("Done with the page of KDB at this spot:")
-                            print("File: " + fileName)
-                            print(decrypt)
-                            return
-
-
-getAllKDB()
-
-'''
+    print(res)

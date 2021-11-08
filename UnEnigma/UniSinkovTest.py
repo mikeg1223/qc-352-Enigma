@@ -6,7 +6,7 @@ class UniSinkovTest:
     uniGramTable = {}
     numChars = 0
     def __init__(self):
-        self.readUnigramTable("../Resources/sampledUnigramMap.txt")
+        self.readUnigramTable("Resources/sampledUnigramMap.txt")
 
 
     '''
