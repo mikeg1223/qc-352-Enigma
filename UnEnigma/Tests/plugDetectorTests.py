@@ -1,12 +1,13 @@
 import random
 from Enigma import Enigma
 from UniSinkov.UniSinkovTest import UniSinkovTest
+from LanguageRecognition import LanguageRecognition
 import time
 
 class testCases:
 
     def __init__(self):
-        pass
+        self.langRec = LanguageRecognition()
 
 
     def generateSettingsFile(self, s: str, enig: Enigma, f) -> str:
@@ -57,7 +58,7 @@ class testCases:
         return ((plug1 == plug2) or (plug1 == (plug2[1]+plug2[0])))
 
 
-    def runTrials(self, enig: Enigma, f) -> float:
+    def testOriginalHillClimbMethod(self, enig: Enigma, f) -> float:
         
         results = 0
         numTrials = 0
@@ -112,25 +113,190 @@ class testCases:
         return results/numTrials
 
 
+    # see the improvement at each step of IOC and Sinkov for the 'grams
+    def testScoreImprovementsThroughTrials(self, enig: Enigma, f, lr: LanguageRecognition):
+        count = 0
+        steps = []
+        totals = []
+
+        functions = [lr.indexOfCoincidenceUnigram, lr.indexOfCoincidenceBigram, lr.indexOfCoincidenceTrigram,
+                     lr.sinkovStatisticUnigram, lr.sinkovStatisticBigram, lr.sinkovStatisticTrigram]
+        
+        # 0 - ciphertext, 1 - unplugged dec, 2 - one plug dec, etc
+        # order of 0's: Unigram IOC, Bigram IOC, Trigram IOC, Unigram Sinkov, Bigram Sinkov, Trigram Sinkov
+        for _ in range(7):
+            steps.append([0,0,0,0,0,0])
+
+        for _ in range(7):
+            totals.append([0,0,0,0,0,0])
+        
+        # +1 if the scores improve for unplugged and then plug 1 through 5. 
+        # same order as steps for the tests: UI, BI, TI, US, BS, TS
+        wasImproved = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]]
+
+        for line in f:
+            count += 1
+            enig.wipe()
+            line = line.strip()
+            information = line.split()
+            enigmaSettings = information[1]
+            cipherText = information[2]
+            knownRotors = [int(enigmaSettings[0]), int(enigmaSettings[3]), int(enigmaSettings[6])]
+            knownRings = [int(enigmaSettings[1:3]), int(enigmaSettings[4:6]), int(enigmaSettings[7:9])]
+            knownPlugSettings = [enigmaSettings[9:11], enigmaSettings[11:13], enigmaSettings[13:15], enigmaSettings[15:17],
+                                    enigmaSettings[17:]]
+            enig.setRotors(knownRotors[0], knownRings[0], knownRotors[1], knownRings[1], knownRotors[2], knownRings[2])
+
+            for _ in range(6):
+                steps[0][_] = functions[_](cipherText)
+                totals[0][_] += steps[0][_]
+
+            # unplugged
+            for _ in range(6):
+                enig.resetRotorPositions()
+                steps[1][_] = functions[_](enig.encryptString(cipherText))
+                totals[1][_] += steps[1][_]
+                if steps[1][_] - steps[0][_] > 0:
+                    wasImproved[0][_] += 1
+            
+            # 1 plug:
+            for x in range(5):
+                enig.resetRotorPositions()
+                enig.resetSteckerboard()
+                enig.setSteckerboardPlug(*knownPlugSettings[x])
+                for y in range(6):
+                    steps[2][y] = functions[y](enig.encryptString(cipherText))
+                    totals[2][y] += steps[2][y]
+                    if steps[2][y] - steps[1][y] > 0:
+                        wasImproved[1][y] += 1
+            
+
+            # 2 plugs:
+            for x in range(4):
+                for y in range(x+1,5):
+                    enig.resetRotorPositions()
+                    enig.resetSteckerboard()
+                    enig.setSteckerboardPlug(*knownPlugSettings[x])
+                    enig.setSteckerboardPlug(*knownPlugSettings[y])
+                    for z in range(6):
+                        steps[3][z] = functions[z](enig.encryptString(cipherText))
+                        totals[3][z] += steps[3][z]
+                        if steps[3][z] - steps[2][z] > 0:
+                            wasImproved[2][z] += 1
+            
+            
+            # 3 plugs:
+            for a in range(3):
+                for b in range(a+1, 4):
+                    for c in range(b+1, 5):
+                        enig.resetRotorPositions()
+                        enig.resetSteckerboard()
+                        enig.setSteckerboardPlug(*knownPlugSettings[a])
+                        enig.setSteckerboardPlug(*knownPlugSettings[b])
+                        enig.setSteckerboardPlug(*knownPlugSettings[c])
+                        for y in range(6):
+                            steps[4][y] = functions[y](enig.encryptString(cipherText))
+                            totals[4][y] += steps[4][y]
+                            if steps[4][y] - steps[3][y] > 0:
+                                wasImproved[3][y] += 1
+            
+
+            # 4 plugs:
+            for a in range(2):
+                for b in range(a+1, 3):
+                    for c in range(b+1, 4):
+                        for d in range(c+1, 5):
+                            enig.resetRotorPositions()
+                            enig.resetSteckerboard()
+                            enig.setSteckerboardPlug(*knownPlugSettings[a])
+                            enig.setSteckerboardPlug(*knownPlugSettings[b])
+                            enig.setSteckerboardPlug(*knownPlugSettings[c])
+                            enig.setSteckerboardPlug(*knownPlugSettings[d])
+                            for y in range(6):
+                                steps[5][y] = functions[y](enig.encryptString(cipherText))
+                                totals[5][y] += steps[5][y]
+                                if steps[5][y] - steps[4][y] > 0:
+                                    wasImproved[4][y] += 1
+            
+
+            # all plugs:
+            enig.resetRotorPositions()
+            enig.resetSteckerboard()
+            for _ in knownPlugSettings:
+                enig.setSteckerboardPlug(*_)
+            for y in range(6):
+                steps[6][y] = functions[y](enig.encryptString(cipherText))
+                totals[6][y] += steps[6][y]
+                if steps[6][y] - steps[5][y] > 0:
+                    wasImproved[5][y] += 1
+
+        plugName = ["cipherText", "none", "one", "two", "three", "four", "five"]
+        testName = ["Unigram IOC", "Bigram IOC", "Trigram IOC", "Unigram Sinkov", "Bigram Sinkov", "Trigram Sinkov"]
+
+        # normalizing the results
+        for x in range(len(wasImproved)):
+            for y in range(len(wasImproved[x])):
+                wasImproved[x][y] /= count
+        
+        for x in range(len(wasImproved[1])):
+            wasImproved[1][x] /= 5
+        
+        for x in range(len(wasImproved[2])):
+            wasImproved[2][x] /= 10
+        
+        for x in range(len(wasImproved[3])):
+            wasImproved[3][x] /= 10
+        
+        for x in range(len(wasImproved[4])):
+            wasImproved[4][x] /= 5
+        
+        for x in range(len(totals)):
+            for y in range(len(totals[x])):
+                totals[x][y] /= count
+
+        for x in range(len(totals)):
+            print(plugName[x], " plugs", "Test Results           P(better score)" , "\n ___________________________________________", )
+            for y in range(len(totals[x])):
+                if x == 0:
+                    print(testName[y], " ", totals[x][y])
+                else:
+                    print(testName[y], " ", totals[x][y], " ", wasImproved[x-1][y])
+            print("\n")
 
             
 
 
 if __name__ == "__main__":
+
+
     e = Enigma()
     tc = testCases()
+    l = LanguageRecognition()
+    l.loadUnigramTable()
+    l.loadBigramTable()
+    l.loadTrigramTable()
 
+
+    with open("UnEnigma/Tests/testPairs.txt", "r") as file:
+        t = time.time()
+        tc.testScoreImprovementsThroughTrials(e, file, l)
+        print(time.time() -t)
+
+
+    '''
     with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
         for line in file:
             with open("UnEnigma/Tests/testPairs.txt", "a") as file2:
                 tc.generateSettingsFile(line.strip(), e, file2)
-    
+    '''
+
+
     '''
     res = 0
     t = None
     with open("Tests/testPairs.txt", "r") as file:
         t = time.time()
-        res = tc.runTrials(e, file)
+        res = tc.testOriginalHillClimbMethod(e, file)
         print("time elapsed (s): ", time.time() - t)
 
     print(res)

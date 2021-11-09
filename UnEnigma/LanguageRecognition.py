@@ -21,25 +21,28 @@ class LanguageRecognition:
 
 
     def loadUnigramTable(self):
-        with open("Resource/unigram_scores.txt", "r") as file:
+        with open("Resources/unigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.unigramTable[pair[0]] = float(pair[1])
+        LanguageRecognition.UNIGRAM_TABLE_LOADED = True
 
 
     
     def loadBigramTable(self):
-        with open("Resource/bigram_scores.txt", "r") as file:
+        with open("Resources/bigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.bigramTable[pair[0]] = float(pair[1])
+        LanguageRecognition.BIGRAM_TABLE_LOADED = True
 
 
     def loadTrigramTable(self):
-        with open("Resource/trigram_scores.txt", "r") as file:
+        with open("Resources/trigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.trigramTable[pair[0]] = float(pair[1])
+        LanguageRecognition.TRIGRAM_TABLE_LOADED = True
 
 
     def resetTables(self):
