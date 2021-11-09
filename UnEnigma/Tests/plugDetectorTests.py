@@ -254,6 +254,18 @@ class testCases:
             for y in range(len(totals[x])):
                 totals[x][y] /= count
 
+        for x in range(len(totals[2])):
+            totals[2][x] /= 5
+
+        for x in range(len(totals[3])):
+            totals[3][x] /= 10
+        
+        for x in range(len(totals[4])):
+            totals[4][x] /= 10
+        
+        for x in range(len(totals[5])):
+            totals[5][x] /= 5
+
         for x in range(len(totals)):
             print(plugName[x], " plugs", "Test Results           P(better score)" , "\n ___________________________________________", )
             for y in range(len(totals[x])):
@@ -261,6 +273,131 @@ class testCases:
                     print(testName[y], " ", totals[x][y])
                 else:
                     print(testName[y], " ", totals[x][y], " ", wasImproved[x-1][y])
+            print("\n")
+
+
+    def testScoreVarienceThroughTrials(self, enig: Enigma, f, lr: LanguageRecognition):
+        count = 0
+        totals = []
+
+        functions = [lr.indexOfCoincidenceUnigram, lr.indexOfCoincidenceBigram, lr.indexOfCoincidenceTrigram,
+                     lr.sinkovStatisticUnigram, lr.sinkovStatisticBigram, lr.sinkovStatisticTrigram]
+        
+        # 0 - ciphertext, 1 - unplugged dec, 2 - one plug dec, etc
+        # order of 0's: Unigram IOC, Bigram IOC, Trigram IOC, Unigram Sinkov, Bigram Sinkov, Trigram Sinkov
+        for _ in range(7):
+            totals.append([0,0,0,0,0,0])
+
+        means = [[0.03851383766038299, 0.0014744485351965888, 5.671894873885871e-05,-255.44619883833647,-503.7947181843265, -541.2713446819237],
+                [0.048486198302156114, 0.002835849617626333, 0.0002348217681214902, -228.80141111761088, -458.77495975681035, -546.9276782511042],
+                [0.051320603203003766,0.003439037740998043, 0.0003750988527416976, -222.2195651123471, -444.27664667663146, -544.2822260786331],
+                [0.054510873648711454, 0.004229413288313244, 0.0006023698444590284, -214.75125604528617, -426.22262111853996, -538.3314738609599],
+                [0.058057009639345535, 0.0052480056893026575, 0.0009606266399656008, -206.396483916423, -404.00562572285975, -527.2340122816859],
+                [0.06195901117490209, 0.006540707304762179, 0.0015081216890610225, -197.15524872575634, -376.9450412932546, -508.4975632188219],
+                [0.06621687825533423, 0.008158273426569784, 0.002322136756688445, -187.02755047329327, -344.2868867967599, -478.8912464243628]]
+
+        for line in f:
+            count += 1
+            enig.wipe()
+            line = line.strip()
+            information = line.split()
+            enigmaSettings = information[1]
+            cipherText = information[2]
+            knownRotors = [int(enigmaSettings[0]), int(enigmaSettings[3]), int(enigmaSettings[6])]
+            knownRings = [int(enigmaSettings[1:3]), int(enigmaSettings[4:6]), int(enigmaSettings[7:9])]
+            knownPlugSettings = [enigmaSettings[9:11], enigmaSettings[11:13], enigmaSettings[13:15], enigmaSettings[15:17],
+                                    enigmaSettings[17:]]
+            enig.setRotors(knownRotors[0], knownRings[0], knownRotors[1], knownRings[1], knownRotors[2], knownRings[2])
+
+            for _ in range(6):
+                totals[0][_] += (functions[_](cipherText)-means[0][_])**2
+
+            # unplugged
+            for _ in range(6):
+                enig.resetRotorPositions()
+                totals[1][_] += (functions[_](enig.encryptString(cipherText)) - means[1][_])**2
+            
+            # 1 plug:
+            for x in range(5):
+                enig.resetRotorPositions()
+                enig.resetSteckerboard()
+                enig.setSteckerboardPlug(*knownPlugSettings[x])
+                for y in range(6):
+                    totals[2][y] += (functions[y](enig.encryptString(cipherText))-means[2][y])**2
+            
+
+            # 2 plugs:
+            for x in range(4):
+                for y in range(x+1,5):
+                    enig.resetRotorPositions()
+                    enig.resetSteckerboard()
+                    enig.setSteckerboardPlug(*knownPlugSettings[x])
+                    enig.setSteckerboardPlug(*knownPlugSettings[y])
+                    for z in range(6):
+                        totals[3][z] += (functions[z](enig.encryptString(cipherText)) - means[3][z])**2
+            
+            
+            # 3 plugs:
+            for a in range(3):
+                for b in range(a+1, 4):
+                    for c in range(b+1, 5):
+                        enig.resetRotorPositions()
+                        enig.resetSteckerboard()
+                        enig.setSteckerboardPlug(*knownPlugSettings[a])
+                        enig.setSteckerboardPlug(*knownPlugSettings[b])
+                        enig.setSteckerboardPlug(*knownPlugSettings[c])
+                        for y in range(6):
+                            totals[4][y] += (functions[y](enig.encryptString(cipherText))-means[4][y])**2
+            
+
+            # 4 plugs:
+            for a in range(2):
+                for b in range(a+1, 3):
+                    for c in range(b+1, 4):
+                        for d in range(c+1, 5):
+                            enig.resetRotorPositions()
+                            enig.resetSteckerboard()
+                            enig.setSteckerboardPlug(*knownPlugSettings[a])
+                            enig.setSteckerboardPlug(*knownPlugSettings[b])
+                            enig.setSteckerboardPlug(*knownPlugSettings[c])
+                            enig.setSteckerboardPlug(*knownPlugSettings[d])
+                            for y in range(6):
+                                totals[5][y] += (functions[y](enig.encryptString(cipherText)) - means[5][y])**2
+            
+
+            # all plugs:
+            enig.resetRotorPositions()
+            enig.resetSteckerboard()
+            for _ in knownPlugSettings:
+                enig.setSteckerboardPlug(*_)
+            for y in range(6):
+                totals[6][y] += (functions[y](enig.encryptString(cipherText)) - means[6][y])
+
+        plugName = ["cipherText", "none", "one", "two", "three", "four", "five"]
+        testName = ["Unigram IOC", "Bigram IOC", "Trigram IOC", "Unigram Sinkov", "Bigram Sinkov", "Trigram Sinkov"]
+
+        # normalizing the results
+        
+        for x in range(len(totals)):
+            for y in range(len(totals[x])):
+                totals[x][y] /= count
+            
+        for x in range(len(totals[2])):
+            totals[2][x] /= 5
+
+        for x in range(len(totals[3])):
+            totals[3][x] /= 10
+        
+        for x in range(len(totals[4])):
+            totals[4][x] /= 10
+        
+        for x in range(len(totals[5])):
+            totals[5][x] /= 5
+
+        for x in range(len(totals)):
+            print(plugName[x]+" plugs", "    Variance" , "\n ___________________________________________", )
+            for y in range(len(totals[x])):
+                    print(testName[y], " ", totals[x][y])
             print("\n")
 
             
@@ -279,9 +416,17 @@ if __name__ == "__main__":
 
     with open("UnEnigma/Tests/testPairs.txt", "r") as file:
         t = time.time()
+        tc.testScoreVarienceThroughTrials(e, file, l)
+        print(time.time() - t)
+
+
+    '''
+    with open("UnEnigma/Tests/testPairs.txt", "r") as file:
+        t = time.time()
         tc.testScoreImprovementsThroughTrials(e, file, l)
         print(time.time() -t)
 
+    '''
 
     '''
     with open("UnEnigma/Tests/ourFuture.txt", "r") as file:
