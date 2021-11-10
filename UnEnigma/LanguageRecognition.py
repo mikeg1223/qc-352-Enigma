@@ -144,8 +144,20 @@ class LanguageRecognition:
                 file.write(key + " " + "{:.8f}".format(ugrams[key]/unigramCount)+ "\n")
 
 
+    '''
+        The following 6 functions are all statistical tests to give a string a 'score' in English
+        
+        A unigram is any character                  (26 total unigrams)
+        A bigram is any permutation of 2 characters (26*26 possible bigrams)
+        A trigram is any permutation of 3 characters(26*26*26 possible trigrams)
 
-    # The following 6 functions are all tests to give a string a 'score' in English
+        Sinkov statistics will score a string based on the log(frequencies) of the exact particular n-grams that compose the string
+            For example: If a string  has 'th' in its string, it will have a better Sinkov score than a string that has 'xq' in its string
+                          'th' is a very common bigram, while 'xq' is almost impossible to appear.
+
+        Index of Coincidence statistic will score a string based on the frequencies of any n-grams within the string 
+            For example: "aabbccdd" will have a higher IOC score than  "abcdefgh" because there are more repetitions of letters within the string 
+    '''
 
     def indexOfCoincidenceUnigram(self, input: str) -> float:
         
@@ -230,10 +242,11 @@ class LanguageRecognition:
 
         return output
 
-
-    # These functions run the algorithm to solve for the best plugs 1 by 1.
-        # Each one of them is tailored to a different text file  
-        # The scoring algorithm used can be changed (uni/bi/trisinkov <--> uni/bi/triIOC)
+    '''
+        This function is the driver of LanguageRecognition
+        It runs the algorithm to solve for the best plugs 1 by 1 by using language recognition statistics.
+        The choice of statistic used can be changed 
+    '''
 
     def findBestPlugs(self, decrypt, rotorSettings, outFile, cipher="egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"):
 
@@ -246,6 +259,7 @@ class LanguageRecognition:
         
         baseLine = self.sinkovStatisticBigram(decrypt)
 
+            # Repeat for 5 plug pairs
         for _ in range(5):
 
             maxSoFar = baseLine
@@ -270,7 +284,7 @@ class LanguageRecognition:
                     s = e.encryptString(cipher)
                     score = self.sinkovStatisticBigram(s)
 
-
+                        # If we found a new best plug on this trial
                     if (score > maxSoFar):
                         maxSoFar = score
                         bestA = x
@@ -279,8 +293,8 @@ class LanguageRecognition:
                         lastString = s
 
             
-            # if we couldn't find a single improvement among any steckerboard pairs
-            # end the simulation now
+            # If we couldn't find a single improvement among any steckerboard pairs
+            # End the simulation now, no need to get all 5 plug pairs
             if(maxSoFar <= baseLine):
                 outFile.write("cipher -->  Rotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString + "\n") 
                 return 
@@ -294,12 +308,24 @@ class LanguageRecognition:
         # When completed with 5 rounds, return plugs
         outFile.write("cipher -->  Rotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString + "\n") 
 
+
+        '''
+        These methods are just used to run the findBestPlugs() function on different files.
+        We stored files with different formats so they need to be read in differently.
+        Each one of these functions is tailored to a different input feed
+        '''
+
     def tryIOC(self):
 
         with open("IOC_unigram/IC_uni_output.txt","r") as f:
             with open("Output_LangRec_OnTop5000IOC.txt","w") as o:
 
+                count = 0
+
                 for line in f:
+
+                    count+=1
+                    if(count>5): return
 
                     line = line.strip()
                     words = line.split()
@@ -341,7 +367,7 @@ class LanguageRecognition:
                 for line in f:
                     
                     count += 1
-                    if(count > 25): return
+                    if(count > 5): return
                     line = line.strip()
                     words = line.split()
                     cipher = words[2]
@@ -353,10 +379,6 @@ class LanguageRecognition:
 
                     self.findBestPlugs( decrypt, rotorSettings, o, cipher)
 
-
-
-
-
     def hillClimbing(self,input: str):
         pass
 
@@ -364,5 +386,5 @@ class LanguageRecognition:
 if __name__ == "__main__":
     start = time.time()
     l = LanguageRecognition()
-    l.tryIOC()
-    print(str((time.time() - start)/5000) + " seconds per compute") 
+    l.tryTestPairs()
+    print(str((time.time() - start)/5) + " seconds per compute") 
