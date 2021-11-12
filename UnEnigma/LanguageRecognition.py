@@ -543,9 +543,10 @@ class LanguageRecognition:
 
         rand = random.SystemRandom()        
             #Repeat till we find a valid random char
-        for char in selected:
-            s = s.replace(char, "")
-
+        char = s[rand.randint(0,100)%len(s)]
+        while char in selected:
+            char = s[rand.randint(0,100)%len(s)]
+        
         return s[rand.randint(0,len(s)-1)]
 
 
