@@ -1,0 +1,77 @@
+RUNNING LANGUAGE RECOGNITION TEST ON PLUGSETS WITH:
+      4 COMMON LETTERS STECKERED
+      4 MID letters STECKERED 
+      2 RARE letters STECKERED
+
+AND LETTERS OF DIFFERENT RANK STECKER TO EACHOTHER [common <--> rare <--> mid]
+
+**************************************************************************************
+4 common -- 4 mid -- 2 rare
+
+[common,common] [common,common] [mid,mid] [mid,mid] [rare,rare]
+
+ AVG STR SCORE: 0.7492307692307691
+ AVG PLUG SCORE: 0.688
+
+0.0[8]: ++++++++
+0.2[9]: +++++++++
+0.4[11]: +++++++++++
+0.6[16]: ++++++++++++++++
+0.8[15]: +++++++++++++++
+1.0[41]: +++++++++++++++++++++++++++++++++++++++++
+
+**************************************************************************************
+4 common -- 4 mid -- 2 rare (more mixed than below)
+[common,rare] [common,mid] [common,mid] [common,mid] [mid,rare]
+
+ AVG STR SCORE: 0.5955384615384617
+ AVG PLUG SCORE: 0.5160000000000001
+
+ 0.0[24]: ++++++++++++++++++++++++
+0.2[18]: ++++++++++++++++++
+0.4[9]: +++++++++
+0.6[8]: ++++++++
+0.8[7]: +++++++
+1.0[34]: ++++++++++++++++++++++++++++++++++
+
+**************************************************************************************
+4 common -- 4 mid -- 2 rare (less mixed than above)
+[common,common] [mid,mid] [common,rare] [common,mid]  [mid,rare]
+
+ AVG STR SCORE: 0.7330769230769232
+ AVG PLUG SCORE: 0.6720000000000002
+
+ 0.0[8]: ++++++++
+0.2[11]: +++++++++++
+0.4[13]: +++++++++++++
+0.6[17]: +++++++++++++++++
+0.8[7]: +++++++
+1.0[44]: ++++++++++++++++++++++++++++++++++++++++++++
+
+ **************************************************************************************
+4 common -- 4 mid -- 2 rare (choosing to make common less mixed, keep mid/rare mix)
+[common,common] [mid,mid] [common,common] [rare,mid]  [mid,rare]
+
+ AVG STR SCORE: 0.754
+ AVG PLUG SCORE: 0.6979999999999995
+
+0.0[6]: ++++++
+0.2[8]: ++++++++
+0.4[15]: +++++++++++++++
+0.6[12]: ++++++++++++
+0.8[20]: ++++++++++++++++++++
+1.0[39]: +++++++++++++++++++++++++++++++++++++++
+
+ **************************************************************************************
+4 common -- 4 mid -- 2 rare (choosing to make common less mixed, keep mid/rare mix)
+[common,common] [mid,mid] [common,rare] [mid,mid]  [common,rare]
+
+ AVG STR SCORE: 0.7686153846153847
+ AVG PLUG SCORE: 0.7120000000000002
+
+0.0[12]: ++++++++++++
+0.2[12]: ++++++++++++
+0.4[5]: +++++
+0.6[8]: ++++++++
+0.8[5]: +++++
+1.0[58]: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

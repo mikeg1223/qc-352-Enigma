@@ -1,10 +1,7 @@
-import BiSinkov
 from Enigma import Enigma
-from BiSinkov.BiSinkovTest import BiSinkovTest
-from UniSinkov.UniSinkovTest import UniSinkovTest
-import IOC_bigram
 import time
 import math
+import random
 
 class LanguageRecognition:
 
@@ -22,25 +19,22 @@ class LanguageRecognition:
     # These 3 functions load in the unigram/bigram/trigram tables from the text files which were precomputed
 
     def loadUnigramTable(self):
-        with open("../Resources/unigram_scores.txt", "r") as file:
+        with open("../Resources/sample_data/unigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.unigramTable[pair[0]] = float(pair[1])
-        LanguageRecognition.UNIGRAM_TABLE_LOADED = True
     
     def loadBigramTable(self):
-        with open("../Resources/bigram_scores.txt", "r") as file:
+        with open("../Resources/sample_data/bigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.bigramTable[pair[0]] = float(pair[1])
-        LanguageRecognition.BIGRAM_TABLE_LOADED = True
 
     def loadTrigramTable(self):
-        with open("../Resources/trigram_scores.txt", "r") as file:
+        with open("../Resources/sample_data/trigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.trigramTable[pair[0]] = float(pair[1])
-        LanguageRecognition.TRIGRAM_TABLE_LOADED = True
 
 
     # Functions to build out our n-gram tables. Only need to be done once for a sample file.
@@ -248,12 +242,9 @@ class LanguageRecognition:
 
     def tryTestPairs(self,numTrials):
 
-        with open("Tests/testPairs.txt","r") as f:
-            with open("Tests/output_testPairs.txt","w") as o:
+        with open("../Resources/customPlugsTest/readIn1.txt", "r") as f:
+            with open("../Resources/customPlugsTest/out2.txt", "w") as o:
 
-                testName = " All 5 Plugs BiSinkov\n"
-                o.write(testName)
-                print(testName)
                 e = Enigma()
                 count = 0
                 totalStrScore = 0.0
@@ -263,8 +254,7 @@ class LanguageRecognition:
                     
                     count += 1
                     if(count > numTrials): break
-                    line = line.strip()
-                    words = line.split()
+                    words = line.strip().split()
                     cipher = words[2]
                     rotorSettings = words[1][:9]
 
@@ -356,29 +346,55 @@ class LanguageRecognition:
         return score/10
 
     def makeHistogram(self, numTrials:int ):
-        with open("Tests/output_testPairs.txt","r") as f:
-            with open("Tests/histogram_strings_output.txt","w") as o:
+
+        with open("../Resources/customPlugsTest/out2.txt","r") as f:
+            with open("../Resources/customPlugsTest/hist1.txt","w") as o:
+
+                f.readline()
                 count =0
-                f.readline()
-                f.readline()
-                histAry = { }
+                histAry = {
+                    0.0:0,
+                    0.2:0,
+                    0.4:0,
+                    0.6:0,
+                    0.8:0,
+                    1.0:0
+                }
+
                 for line in f:
                     count = count+1
                     if(count > numTrials): break
-                    line = line.strip()
-                    words = line.split()
-                    value = round(float(words[-3]),2)
-                    if value in histAry: histAry[value] = histAry[value]+1
-                    else: histAry[value] =1
+                    words = line.strip().split()
+                    val = float(words[-1])
+                    histAry[val] = histAry[val] + 1
+                
+                for val in histAry:
+                    o.write("\n" + str(val) + "[" + str(histAry[val]) + "]: " )
+                    for _ in range(histAry[val]):
+                        o.write( "+")
 
-                val = -0.01
-                while(val <= 1.00):
-                    val = round(val + .01,2)
-                    if val in histAry:
-                        o.write("\n" + str(val) + "[" + str(histAry[val]) + "]: " )
-                        for _ in range(histAry[val]):
-                            o.write( "+")
 
+        '''
+                # Code to compute string score histograms
+                        histAry = { }
+
+                        for line in f:
+                            count = count+1
+                            if(count > numTrials): break
+                            line = line.strip()
+                            words = line.split()
+                            value = round(float(words[-3]),2)
+                            if value in histAry: histAry[value] = histAry[value]+1
+                            else: histAry[value] =1
+
+                        val = -0.01
+                        while(val <= 1.00):
+                            val = round(val + .01,2)
+                            if val in histAry:
+                                o.write("\n" + str(val) + "[" + str(histAry[val]) + "]: " )
+                                for _ in range(histAry[val]):
+                                    o.write( "+")
+        '''
     
     # Function to determine the 5 best plugs for a given string.
 
@@ -392,10 +408,9 @@ class LanguageRecognition:
         e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
         
             # Repeat for 5 plug pairs
-        for i in range(5):
+        for _ in range(5):
 
-            if (i < 5): test = self.sinkovStatisticBigram
-            #else: test = self.sinkovStatisticTrigram
+            test = self.sinkovStatisticBigram
 
             baseLine = test(decrypt)
             maxSoFar = baseLine
@@ -446,12 +461,100 @@ class LanguageRecognition:
         return plugs,lastString 
 
 
+    # Function to create testPairs
+    def createTestPairs(self,numTrials):
 
-# program runs from below 
+        with open("../Resources/customPlugsTest/readIn1.txt", "w") as o:
+                
+                stringsToDecipher = ["thehistoryofallhithertoexistingsocietiesisthehistoryofclassstrugg", "urneymaninawordoppressorandoppressedstoodinconstantoppositiontoon", "lesfreemanandslavepatricianandplebeianlordandserfguildmasterandjo"]
+                rotorsConfigs = ["313607105","101522619","714224417"]
+                commonLetters="eariotns"
+                midLetters = "lcudpmhgbfy"
+                rareLetters = "wkvxzjq"
+
+                rand = random.Random()
+                rand.seed()
+                e = Enigma()
+                trials = numTrials
+
+
+                for count in range(trials):
+
+                    e.wipe()
+
+                        # Pick the string to encrypt
+                    if count<33:
+                        s = stringsToDecipher[0]
+                    elif count < 67: 
+                        s = stringsToDecipher[1]
+                    else:
+                        s=stringsToDecipher[2]
+
+                        # Pick the rotors to encrypt
+
+                    if count%3 == 0:
+                        r = rotorsConfigs[0]
+                    elif count%3 == 1:
+                        r = rotorsConfigs[1]
+                    else:
+                        r = rotorsConfigs[2]
+
+                    e.setRotors(int(r[0]), int(r[1]+r[2]), int(r[3]) , int(r[4]+r[5]) , int(r[6]), int(r[7]+r[8]))
+                    o.write(s + " " + r) 
+
+
+                        # Pick the 5 stecker pairs
+                    selectedLetters = ""
+                    
+                    for i in range(5):
+
+                        if(i == 0):
+                            firstChar = commonLetters
+                            secondChar = rareLetters
+                        elif(i == 1):
+                            firstChar = commonLetters
+                            secondChar = midLetters
+                        elif(i == 2):
+                            firstChar = midLetters
+                            secondChar = midLetters
+                        elif(i == 3):
+                            firstChar = midLetters
+                            secondChar = midLetters
+                        elif(i == 4):
+                            firstChar = midLetters
+                            secondChar = rareLetters
+                        
+                        letter1 = self.pickRandomChar(firstChar, selectedLetters)
+                        selectedLetters += letter1
+                        letter2 = self.pickRandomChar(secondChar, selectedLetters)
+                        selectedLetters +=  letter2
+
+                        e.setSteckerboardPlug(letter1, letter2)
+                        o.write(letter1 + letter2)
+
+
+
+
+                    cipher = e.encryptString(s)
+                    o.write( " " + cipher + "\n")
+
+
+    def pickRandomChar(self, s:str, selected:str):
+
+        rand = random.SystemRandom()        
+            #Repeat till we find a valid random char
+        for char in selected:
+            s = s.replace(char, "")
+
+        return s[rand.randint(0,len(s)-1)]
+
+
+    # program runs from below 
 if __name__ == "__main__":
-    numTrials = 1000
+    numTrials = 100
     start = time.time()
     l = LanguageRecognition()
-    #l.tryTestPairs(numTrials)
+    l.createTestPairs(numTrials)
+    l.tryTestPairs(numTrials)
     l.makeHistogram(numTrials)
     print(str((time.time() - start)/numTrials) + " seconds per compute") 
