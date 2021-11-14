@@ -725,7 +725,7 @@ class LanguageRecognition:
                         IOCscore = self.indexOfCoincidenceUnigram(decrypt) 
                         if(IOCscore > 0.041) and (IOCscore < 0.053) :
                             biSinkovscore = self.sinkovStatisticBigram(decrypt)
-                            if(biSinkovscore > -495) and (biSinkovscore < -425):
+                            if(biSinkovscore > -482) and (biSinkovscore < -435):
                                 rotorConfig = str(words[0]) + str(words[1]).zfill(2) + str(words[2]) + str(words[3]).zfill(2) + str(words[4]) + str(words[5]).zfill(2)
                                 o.write(rotorConfig + " " + decrypt + "\n")
 
