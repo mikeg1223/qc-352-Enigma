@@ -137,95 +137,96 @@ class LanguageRecognition:
     '''
 
     # Functions to create franksteinstein tests
-    def createFrankensteinKDB(self):
+    '''
+        def createFrankensteinKDB(self):
 
-        with open("../Resources/frankenstein_samples/Frankenstein.txt","r") as f:
-            with open("../Resources/frankenstein_samples/Frankenstein_KDB.txt", "w") as o:
-                for line in f:
+            with open("../Resources/frankenstein_samples/Frankenstein.txt","r") as f:
+                with open("../Resources/frankenstein_samples/Frankenstein_KDB.txt", "w") as o:
+                    for line in f:
 
-                    s = ""
-                    s += line.strip()
-                    if(len(s) >= 62 ):
-                        s = s[:62]
-                        s += "kdb"
-                        o.write(s + "\n")
-                        
-    def createFrankensteinTests(self):
-        enig = Enigma()
-
-
-        with open("../Resources/frankenstein_samples/Frankenstein_KDB.txt") as f:
-            with open("../Resources/frankenstein_samples/Frankenstein_KDB_tests.txt", "w") as o:
-                for line in f:
-
-                    enig.wipe()
-
-                    alpha = "abcdefghijklmnopqrstuvwxyz"
-                    commonLetters="eariotns"
+                        s = ""
+                        s += line.strip()
+                        if(len(s) >= 62 ):
+                            s = s[:62]
+                            s += "kdb"
+                            o.write(s + "\n")
+                            
+        def createFrankensteinTests(self):
+            enig = Enigma()
 
 
-                    rotors = []
-                    rings = []
-                    plugs = []
+            with open("../Resources/frankenstein_samples/Frankenstein_KDB.txt") as f:
+                with open("../Resources/frankenstein_samples/Frankenstein_KDB_tests.txt", "w") as o:
+                    for line in f:
 
-                        # Gen rotors
-                    for _ in range (3):
-                        rotors.append(random.randint(1,8))
+                        enig.wipe()
 
-                    while rotors[0] == rotors[1] or rotors[0] == rotors[2] or rotors[1] == rotors[2]:
+                        alpha = "abcdefghijklmnopqrstuvwxyz"
+                        commonLetters="eariotns"
+
+
                         rotors = []
+                        rings = []
+                        plugs = []
+
+                            # Gen rotors
                         for _ in range (3):
                             rotors.append(random.randint(1,8))
 
-                        # Gen rings
-                    for _ in range(3):
-                        rings.append(random.randint(0,25))
-                    
-                        # set rotors
-                    enig.setRotors(rotors[0], rings[0], rotors[1], rings[1], rotors[2], rings[2])
+                        while rotors[0] == rotors[1] or rotors[0] == rotors[2] or rotors[1] == rotors[2]:
+                            rotors = []
+                            for _ in range (3):
+                                rotors.append(random.randint(1,8))
+
+                            # Gen rings
+                        for _ in range(3):
+                            rings.append(random.randint(0,25))
+                        
+                            # set rotors
+                        enig.setRotors(rotors[0], rings[0], rotors[1], rings[1], rotors[2], rings[2])
 
 
-                        # Set steckers
-                    plugString =""
-                    for i in range(5):
-                        if(i < 2):
-                            # Fix common letters  array : first
-                            firstCommon = random.randint(0, len(commonLetters)-1)
-                            first = alpha.find(commonLetters[firstCommon] )
-                            commonLetters = commonLetters[:firstCommon] + commonLetters[firstCommon+1:]
-                            
-                            
-                            # Fix alpha
-                            c1 = alpha[first]
-                            alpha = alpha[:first] + alpha[first+1:]
-                            
-                            #Fix common letters: second
-                            secondCommon = random.randint(0, len(commonLetters)-1)
-                            second = alpha.find(commonLetters[secondCommon] )
-                            commonLetters = commonLetters[:secondCommon] + commonLetters[secondCommon+1:]
+                            # Set steckers
+                        plugString =""
+                        for i in range(5):
+                            if(i < 2):
+                                # Fix common letters  array : first
+                                firstCommon = random.randint(0, len(commonLetters)-1)
+                                first = alpha.find(commonLetters[firstCommon] )
+                                commonLetters = commonLetters[:firstCommon] + commonLetters[firstCommon+1:]
+                                
+                                
+                                # Fix alpha
+                                c1 = alpha[first]
+                                alpha = alpha[:first] + alpha[first+1:]
+                                
+                                #Fix common letters: second
+                                secondCommon = random.randint(0, len(commonLetters)-1)
+                                second = alpha.find(commonLetters[secondCommon] )
+                                commonLetters = commonLetters[:secondCommon] + commonLetters[secondCommon+1:]
 
-                            #Fix alpha
-                            c2 = alpha[second]
-                            alpha = alpha[:second] + alpha[second+1:]
-                        else:
-                            first = random.randint(0, len(alpha)-1)
-                            c1 = alpha[first]
-                            alpha = alpha[:first] + alpha[first+1:]
-                            second = random.randint(0, len(alpha)-1)
-                            c2 = alpha[second]
-                            alpha = alpha[:second] + alpha[second+1:]
+                                #Fix alpha
+                                c2 = alpha[second]
+                                alpha = alpha[:second] + alpha[second+1:]
+                            else:
+                                first = random.randint(0, len(alpha)-1)
+                                c1 = alpha[first]
+                                alpha = alpha[:first] + alpha[first+1:]
+                                second = random.randint(0, len(alpha)-1)
+                                c2 = alpha[second]
+                                alpha = alpha[:second] + alpha[second+1:]
 
-                        if ord(c1) < ord(c2):
-                            c1, c2 = c2, c1
-                        plugs.append((c1, c2))
-                        plugString += (c1 + c2)
-                        enig.setSteckerboardPlug(c1,c2)
+                            if ord(c1) < ord(c2):
+                                c1, c2 = c2, c1
+                            plugs.append((c1, c2))
+                            plugString += (c1 + c2)
+                            enig.setSteckerboardPlug(c1,c2)
 
-                    orig = line.strip()
-                    cipher = enig.encryptString(orig)
-                    rotorSettings = str(rotors[0]) + str(rings[0]).zfill(2) + str(rotors[1]) + str(rings[1]).zfill(2) + str(rotors[2]) + str(rings[2]).zfill(2)
-                    o.write(orig + " " + rotorSettings + plugString + " " + cipher + "\n")
-        
+                        orig = line.strip()
+                        cipher = enig.encryptString(orig)
+                        rotorSettings = str(rotors[0]) + str(rings[0]).zfill(2) + str(rotors[1]) + str(rings[1]).zfill(2) + str(rotors[2]) + str(rings[2]).zfill(2)
+                        o.write(orig + " " + rotorSettings + plugString + " " + cipher + "\n")
+    ''' 
 
     # Functions to perform statistical tests on a given string.
 
@@ -314,96 +315,96 @@ class LanguageRecognition:
 
 
     # Functions for testing our statistics
-
-    def tryTestPairs(self,numTrials):
-
-        with open("../Resources/frankenstein_samples/Frankenstein_KDB_tests.txt", "r") as f:
-            with open("../Resources/frankenstein_samples/test_out.txt", "w") as o:
-
-                e = Enigma()
-                count = 0
-                totalPlugScore = 0.0
-                commonLetters="eariotns"
-                midLetters = "lcudpmhgbfy"
-                rareLetters = "wkvxzjq"
-                plugConfigAry = [0,0,0,0,0,0]
-                numPerfect = 0
-
-                for line in f:
-                    
-                    count += 1
-                    if(count > numTrials): break
-                    words = line.strip().split()
-                    cipher = words[2]
-                    rotorSettings = words[1][:9]
-
-                    e.wipe()
-                    e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
-                    decrypt = e.encryptString(cipher)
-
-                        # Calculate best plugs return the resultPlugs and resultStr
-                    resultPlugs, resultStr = self.tryCommonFirst_findBestPlugs( decrypt, rotorSettings, o, cipher)
-
-
-                    num_Common = 0
-                    num_Mid = 0
-                    num_Rare = 0
-                    num_Common_Mid =0
-                    num_Mid_rare = 0
-                    num_Common_rare = 0
-
-                    for plug in resultPlugs:
-                        if plug[0] in commonLetters:
-                            if plug[1] in commonLetters:
-                                num_Common += 1
-                            elif plug[1] in midLetters:
-                                num_Common_Mid +=1
-                            elif plug[1] in rareLetters:
-                                num_Common_rare += 1
-
-                        if plug[0] in midLetters:
-                            if plug[1] in commonLetters:
-                                num_Common_Mid +=1
-                            elif plug[1] in midLetters:
-                                num_Mid +=1
-                            elif plug[1] in rareLetters:
-                                num_Mid_rare += 1
-
-                        if plug[0] in rareLetters:
-                            if plug[1] in commonLetters:
-                                num_Common_rare += 1
-                            elif plug[1] in midLetters:
-                                num_Mid_rare +=1
-                            elif plug[1] in rareLetters:
-                                num_Rare += 1
-
-
-                        # Score this plug score
-                    thisPlugScore = self.plugCompare( words[1][9:], resultPlugs)
-                    totalPlugScore += thisPlugScore
-                    
-                    if (thisPlugScore == 1.0):
-                        numPerfect += 1
-                        plugConfigAry[0] += num_Common
-                        plugConfigAry[1] += num_Common_Mid
-                        plugConfigAry[2] += num_Common_rare
-                        plugConfigAry[3] += num_Mid
-                        plugConfigAry[4] += num_Mid_rare
-                        plugConfigAry[5] += num_Rare
-
-                    plugConfig = str(num_Common) + str(num_Common_Mid) + str(num_Common_rare) + "-" + str(num_Mid) + str(num_Mid_rare) + "-" + str(num_Rare) 
-
-                    
-                    o.write("-----> TruePlugs = " + words[1][9:] + "  PlugConfig: " +  plugConfig  + "     PlugScore: " + str(round(thisPlugScore,2)))
-
-                for i in range(6):
-                    if(numPerfect > 0):
-                        plugConfigAry[i] /= numPerfect
-
-                o.write("\n\nPlug Config Ary (normalized): " + str(plugConfigAry))
-                o.write("\n\nAVG PLUG SCORE: " + str(totalPlugScore/numTrials))
-
     '''
+
+        def tryTestPairs(self,numTrials):
+
+            with open("../Resources/frankenstein_samples/Frankenstein_KDB_tests.txt", "r") as f:
+                with open("../Resources/frankenstein_samples/test_out.txt", "w") as o:
+
+                    e = Enigma()
+                    count = 0
+                    totalPlugScore = 0.0
+                    commonLetters="eariotns"
+                    midLetters = "lcudpmhgbfy"
+                    rareLetters = "wkvxzjq"
+                    plugConfigAry = [0,0,0,0,0,0]
+                    numPerfect = 0
+
+                    for line in f:
+                        
+                        count += 1
+                        if(count > numTrials): break
+                        words = line.strip().split()
+                        cipher = words[2]
+                        rotorSettings = words[1][:9]
+
+                        e.wipe()
+                        e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
+                        decrypt = e.encryptString(cipher)
+
+                            # Calculate best plugs return the resultPlugs and resultStr
+                        resultPlugs, resultStr = self.tryCommonFirst_findBestPlugs( decrypt, rotorSettings, cipher)
+
+
+                        num_Common = 0
+                        num_Mid = 0
+                        num_Rare = 0
+                        num_Common_Mid =0
+                        num_Mid_rare = 0
+                        num_Common_rare = 0
+
+                        for plug in resultPlugs:
+                            if plug[0] in commonLetters:
+                                if plug[1] in commonLetters:
+                                    num_Common += 1
+                                elif plug[1] in midLetters:
+                                    num_Common_Mid +=1
+                                elif plug[1] in rareLetters:
+                                    num_Common_rare += 1
+
+                            if plug[0] in midLetters:
+                                if plug[1] in commonLetters:
+                                    num_Common_Mid +=1
+                                elif plug[1] in midLetters:
+                                    num_Mid +=1
+                                elif plug[1] in rareLetters:
+                                    num_Mid_rare += 1
+
+                            if plug[0] in rareLetters:
+                                if plug[1] in commonLetters:
+                                    num_Common_rare += 1
+                                elif plug[1] in midLetters:
+                                    num_Mid_rare +=1
+                                elif plug[1] in rareLetters:
+                                    num_Rare += 1
+
+
+                            # Score this plug score
+                        thisPlugScore = self.plugCompare( words[1][9:], resultPlugs)
+                        totalPlugScore += thisPlugScore
+                        
+                        if (thisPlugScore == 1.0):
+                            numPerfect += 1
+                            plugConfigAry[0] += num_Common
+                            plugConfigAry[1] += num_Common_Mid
+                            plugConfigAry[2] += num_Common_rare
+                            plugConfigAry[3] += num_Mid
+                            plugConfigAry[4] += num_Mid_rare
+                            plugConfigAry[5] += num_Rare
+
+                        plugConfig = str(num_Common) + str(num_Common_Mid) + str(num_Common_rare) + "-" + str(num_Mid) + str(num_Mid_rare) + "-" + str(num_Rare) 
+
+                        
+                        o.write("-----> TruePlugs = " + words[1][9:] + "  PlugConfig: " +  plugConfig  + "     PlugScore: " + str(round(thisPlugScore,2)))
+
+                    for i in range(6):
+                        if(numPerfect > 0):
+                            plugConfigAry[i] /= numPerfect
+
+                    o.write("\n\nPlug Config Ary (normalized): " + str(plugConfigAry))
+                    o.write("\n\nAVG PLUG SCORE: " + str(totalPlugScore/numTrials))
+
         def tryIOC(self):
 
             with open("IOC_unigram/IC_uni_output.txt","r") as f:
@@ -446,34 +447,29 @@ class LanguageRecognition:
 
                                 self.findBestPlugs( decrypt, rotorSettings, o)
     '''
+    
+    
     def tryResults(self):
 
-        count = 0
-        for pageNum in range(1,57):
-            with open("../Resources/pluglessIOCandBiSinkov/results_.txt", "r") as f:
-                with open("../Resources/actualTests/pluglessResults_01.txt", "w") as o:
+        fname = "../Resources/pluglessIOCandBiSinkov/results_"
+        oname = "../Resources/actualTests/pluglessResults_"
 
-                    e = Enigma()
-                    cipher = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
+        for pageNum in range(1,5):
+
+            with open(fname+str(pageNum).zfill(2)+".txt", "r") as f:
+                with open(oname+str(pageNum).zfill(2)+".txt", "w") as o:
 
                     for line in f:
-                        count+=1
-                        if(count>=50): return
+
+                            # Extract the rotor settings and decrypt
                         words = line.strip().split()
                         decrypt = words[1]
                         rotorSettings = words[0]
 
-                        e.wipe()
-                        e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
 
                             # Calculate best plugs return the resultPlugs and resultStr
-                        resultPlugs, resultStr = self.tryCommonFirst_findBestPlugs( decrypt, rotorSettings, o, cipher)
-                        if resultStr == None:
-                            continue
-                        else:
-                            o.write(str(words) + "-----> Plugs: " + str(resultPlugs) +  "  --> String: " + resultStr)
-
-
+                        resultStr = self.tryCommonFirst_findBestPlugs( decrypt, rotorSettings)
+                        o.write(resultStr)
 
     def plugCompare(self, truePlugs: str, calcPlugs: list ):
         score = 0.0
@@ -606,22 +602,23 @@ class LanguageRecognition:
         outFile.write("\ncipher -->  Rotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString )
         return plugs,lastString 
 
-    def tryCommonFirst_findBestPlugs(self, decrypt, rotorSettings, outFile, cipher="egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"):
+    def tryCommonFirst_findBestPlugs(self, decrypt, rotorSettings):
 
+        cipher="egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
         alpha = "abcdefghijklmnopqrstuvwxyz"
-        commonLetters="eariotns"
+        commonLetters="etnorias"
+        lastString =""
         plugs = []
-        lastString = ""
-        best = ""
-        bestA = 0
-        bestB = 0
-        testString = decrypt[:62]
         test = self.sinkovStatisticBigram
+
+
+            # We cut off the last 3 letters so we can handle the fact that 'kdb' is not a good bigram
+        testString = decrypt[:62]
 
         e = Enigma()
         e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
         
-            # Repeat for 5 plug pairs
+            # Repeat 5 times for 5 plug pairs
         for i in range(5):
 
             baseLine = test(testString)
@@ -629,10 +626,9 @@ class LanguageRecognition:
 
             # For first trial, look for best 1 plug
             if(i<1):
-                # Iterate x from 'A' to 'Y'
+                # Iterate x from across list of common letters
                 for x in range(len(commonLetters)-1):
 
-                    # Iterate y from 'x+1' to 'Z'
                     for y in range(x+1,len(commonLetters)):
                             
                         # Reset enigma object 
@@ -660,6 +656,7 @@ class LanguageRecognition:
 
             # Else, look for best any plugs
             else:
+
                 # Iterate x from 'A' to 'Y'
                 for x in range(len(alpha)-1):
 
@@ -677,6 +674,7 @@ class LanguageRecognition:
                         # Set plugs for this trial
                         e.setSteckerboardPlug(alpha[x], alpha[y])
 
+                            # Re-encrypt the cipher with new plugs
                         s = e.encryptString(cipher)
                         score = test(s[:62])
 
@@ -689,30 +687,36 @@ class LanguageRecognition:
                             lastString = s
 
             
+            
 
-            # If we couldn't find a single improvement among any steckerboard pairs
-            # End the simulation now, no need to get all 5 plug pairs
+            # If we haven't improved, this is a junk string and we can stop now
             if(maxSoFar <= baseLine):
-                outFile.write("\ncipher -->  Rotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString) 
-                return plugs,lastString 
+                outString = ("\nRotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString) 
+                return outString 
+
 
             #otherwise: add the best pair to the list of plugs, and remove them from the alphabet
             plugs.append(best)
             
+            # if first trial, we need to remove letters from alphabet in a tricky way
             if(i < 1):
                 # Remove them from alphabet first
                 alpha = alpha.replace(commonLetters[bestA],"")
                 alpha = alpha.replace(commonLetters[bestB],"")
-                # Remove them from commonLetters
+                
+                # Remove them from commonLetters (only useful if we decide to assume MORE than one common-common paring)
                 commonLetters = commonLetters[:bestA] + commonLetters[bestA+1:bestB] + commonLetters[bestB+1:]
 
+            #otherwise, it is more direct
             else: alpha = alpha[:bestA] + alpha[bestA+1:bestB] + alpha[bestB+1:]
         
 
         # When completed with 5 rounds, return plugs
-        outFile.write("\ncipher -->  Rotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString )
-        return plugs,lastString 
+        outString = ("\nRotor: " + rotorSettings + " --> " + decrypt + " --> Plugs:" + str(plugs) + " --->  " + lastString )
+        return outString
 
+
+    # Functions to thin the field of our 6 mill decrypts
     def getIOCwithinARange(self):
         fname = "../Resources/pluglessResults/pluglessResults_"
 
@@ -729,50 +733,47 @@ class LanguageRecognition:
                                 rotorConfig = str(words[0]) + str(words[1]).zfill(2) + str(words[2]) + str(words[3]).zfill(2) + str(words[4]) + str(words[5]).zfill(2)
                                 o.write(rotorConfig + " " + decrypt + "\n")
 
-
     def testPluglessScoreAverages(self):
 
         with open("../Resources/frankenstein_samples/Frankenstein_KDB_tests.txt", "r") as f:
-            with open("../Resources/frankenstein_samples/test_out.txt", "w") as o:
 
-                e = Enigma()
-                count = 0
-                meanUniIOC = 0.048
-                meanBiIOC = 0.0024
-                meanbiSinkov = -454.2403667697373
-                totalBiSinkov = 0
-                totalUniIOC = 0
-                totalBiIOC = 0
+            e = Enigma()
+            count = 0
+            meanUniIOC = 0.048
+            meanBiIOC = 0.0024
+            meanbiSinkov = -454.2403667697373
+            totalBiSinkov = 0
+            totalUniIOC = 0
+            totalBiIOC = 0
 
-                for line in f:
-                    
-                    count += 1
-                    if(count > 100): break
-                    words = line.strip().split()
-                    cipher = words[2]
-                    rotorSettings = words[1][:9]
-                    e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
-                    decrypt = e.encryptString(cipher)
-                    totalBiSinkov += pow( meanbiSinkov - self.sinkovStatisticBigram(decrypt),2)
-                    totalUniIOC += pow(meanUniIOC - self.indexOfCoincidenceUnigram(decrypt),2)
-                    totalBiIOC += pow(meanBiIOC - self.indexOfCoincidenceBigram(decrypt),2)
+            for line in f:
+                
+                count += 1
+                if(count > 100): break
+                words = line.strip().split()
+                cipher = words[2]
+                rotorSettings = words[1][:9]
+                e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
+                decrypt = e.encryptString(cipher)
+                totalBiSinkov += pow( meanbiSinkov - self.sinkovStatisticBigram(decrypt),2)
+                totalUniIOC += pow(meanUniIOC - self.indexOfCoincidenceUnigram(decrypt),2)
+                totalBiIOC += pow(meanBiIOC - self.indexOfCoincidenceBigram(decrypt),2)
 
-                totalBiSinkov /= 100
-                totalUniIOC /= 100
-                totalBiIOC /= 100
-
+            totalBiSinkov /= 100
+            totalUniIOC /= 100
+            totalBiIOC /= 100
 
 
-                print("\nVar for bisinkov successfull decrypt = " + str(totalBiSinkov) )
-                print("\nVar for uni IOC for successfull decrypt = " + str(totalUniIOC) )
-                print("\nVar for bi IOC successfull decrypt = " + str(totalBiIOC) )
 
+            print("\nVar for bisinkov successfull decrypt = " + str(totalBiSinkov) )
+            print("\nVar for uni IOC for successfull decrypt = " + str(totalUniIOC) )
+            print("\nVar for bi IOC successfull decrypt = " + str(totalBiIOC) )
 
 
     # program runs from below 
 if __name__ == "__main__":
     start = time.time()
     l = LanguageRecognition()
-    l.getIOCwithinARange()
+    l.tryResults()
     end = time.time()
     print(str(end- start) + " seconds in total") 
