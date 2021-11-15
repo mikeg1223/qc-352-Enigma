@@ -14,6 +14,7 @@ class LanguageRecognition:
         self.loadUnigramTable()
         self.loadBigramTable()
         self.loadTrigramTable()
+        self.cipher = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
 
 
     # These 3 functions load in the unigram/bigram/trigram tables from the text files which were precomputed
@@ -717,7 +718,7 @@ class LanguageRecognition:
 
 
     # Functions to thin the field of our 6 mill decrypts
-    def getIOCwithinARange(self):
+    def getIOCwithinARange(self, lower: int, upper: int):
         fname = "../Resources/pluglessResults/pluglessResults_"
 
         for pageNum in range(1,57):
@@ -727,7 +728,7 @@ class LanguageRecognition:
                         words = line.strip().split()
                         decrypt = words[6]
                         IOCscore = self.indexOfCoincidenceUnigram(decrypt) 
-                        if(IOCscore > 0.041) and (IOCscore < 0.053) :
+                        if(IOCscore > lower) and (IOCscore < upper) :
                             biSinkovscore = self.sinkovStatisticBigram(decrypt)
                             if(biSinkovscore > -482) and (biSinkovscore < -435):
                                 rotorConfig = str(words[0]) + str(words[1]).zfill(2) + str(words[2]) + str(words[3]).zfill(2) + str(words[4]) + str(words[5]).zfill(2)
@@ -825,10 +826,85 @@ class LanguageRecognition:
 
 
 
+
+    def findBestPlugsWithDepthFirstSearch(self, outFile) -> list:
+        # using bounds of 1.5x standard deviation + Expected
+        # in order, U IOC, B Sink, B Sink, B Sink, T Sink, T Sink
+        bounds = [[0.0383, 0.0585],[-480.733,-407.818],[-462.921, -389.522],[-439.368, 368.641],[-539.934, -477.059], [-482, -476]]
+        functions = [self.indexOfCoincidenceUnigram, self.sinkovStatisticBigram, self.sinkovStatisticBigram, self.sinkovStatisticBigram, self.sinkovStatisticTrigram, self.sinkovStatisticTrigram, self.sinkovStatisticTrigram]
+        filename = "Resources/pluglessResults/pluglessResults_"
+        ext = ".txt"
+        e = Enigma()
+        for _ in range(1, 57):
+            number = str(_).zfill(2)
+            with open(filename+number+ext, "r") as file:
+                for line in file:
+                    willTest = random.randint(1, 590)
+                    if willTest != 321:
+                        continue
+                    e.wipe()
+                    line = line.strip().split()
+                    # test = self.sinkovStatisticBigram
+                    e.setRotors(int(line[0]), int(line[1]), int(line[2]), int(line[3]), int(line[4]), int(line[5]))
+                    decrypt = line[6]
+                    maxSoFar = float("-inf")
+                    score = 0
+                    plugs = []
+                    initTest = functions[0](decrypt)
+                    write = True
+                    if initTest <bounds[0][0] or initTest > bounds[0][1]:
+                        continue
+                    for num in range(5):
+                        alpha = "abcdefghijklmnopqrstuvwxyz"
+                        # Iterate x from 'A' to 'Y'
+                        for x in range(len(alpha)-1):
+
+                            # Iterate y from 'x+1' to 'Z'
+                            for y in range(x+1,len(alpha)):
+                                    
+                                # Reset enigma object 
+                                e.resetSteckerboard()
+                                e.resetRotorPositions()
+
+                                # Set the plugs we already found
+                                for pair in plugs:
+                                    e.setSteckerboardPlug(pair[0],pair[1])
+
+                                # Set plugs for this trial
+                                e.setSteckerboardPlug(alpha[x], alpha[y])
+
+                                s = e.encryptString(self.cipher[:62])
+                                score = functions[num+1](s)
+
+                                    # If we found a new best plug on this trial
+                                if (score > maxSoFar):
+                                    maxSoFar = score
+                                    bestA = x
+                                    bestB = y
+                                    best = alpha[x] + alpha[y]
+                                    lastString = s
+                        if score < bounds[num+1][0] or score > bounds[num +1][1]:
+                            write = False
+                            break
+                        else:
+                            plugs.append(best)
+                            e.resetSteckerboard()
+                            alpha = alpha[:bestA] + alpha[bestA+1:bestB] + alpha[bestB+1:]
+                    if write:
+                        e.resetSteckerboard()
+                        key = line[0]+line[1].zfill(2)+line[2]+line[3].zfill(2)+line[4]+line[5].zfill(2)
+                        for pair in plugs:
+                            e.setSteckerboardPlug(pair[0],pair[1])
+                            key += pair
+                        outFile.write(key + "\t" +e.encryptString(self.cipher) + "\n")
+        
+
+
     # program runs from below 
 if __name__ == "__main__":
-    start = time.time()
-    l = LanguageRecognition()
-    l.tryResults()
-    end = time.time()
+    with open("randomTestFunctionality.txt", "w") as output:
+        start = time.time()
+        l = LanguageRecognition()
+        l.findBestPlugsWithDepthFirstSearch(output)
+        end = time.time()
     print(str(end- start) + " seconds in total") 
