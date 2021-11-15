@@ -830,7 +830,7 @@ class LanguageRecognition:
     def findBestPlugsWithDepthFirstSearch(self, outFile) -> list:
         # using bounds of 1.5x standard deviation + Expected
         # in order, U IOC, B Sink, B Sink, B Sink, T Sink, T Sink
-        bounds = [[0.0383, 0.0585],[-480.733,-407.818],[-462.921, -389.522],[-439.368, 368.641],[-539.934, -477.059], [-482, -476]]
+        bounds = [[0.0383, 0.0585],[-480.733,-407.818],[-462.921, -389.522],[-439.368, 368.641],[-539.934, -477.059], [-482, -475]]
         functions = [self.indexOfCoincidenceUnigram, self.sinkovStatisticBigram, self.sinkovStatisticBigram, self.sinkovStatisticBigram, self.sinkovStatisticTrigram, self.sinkovStatisticTrigram, self.sinkovStatisticTrigram]
         filename = "Resources/pluglessResults/pluglessResults_"
         ext = ".txt"
@@ -839,23 +839,20 @@ class LanguageRecognition:
             number = str(_).zfill(2)
             with open(filename+number+ext, "r") as file:
                 for line in file:
-                    willTest = random.randint(1, 590)
-                    if willTest != 321:
-                        continue
                     e.wipe()
                     line = line.strip().split()
                     # test = self.sinkovStatisticBigram
                     e.setRotors(int(line[0]), int(line[1]), int(line[2]), int(line[3]), int(line[4]), int(line[5]))
                     decrypt = line[6]
-                    maxSoFar = float("-inf")
                     score = 0
                     plugs = []
                     initTest = functions[0](decrypt)
                     write = True
                     if initTest <bounds[0][0] or initTest > bounds[0][1]:
                         continue
+                    alpha = "abcdefghijklmnopqrstuvwxyz"
                     for num in range(5):
-                        alpha = "abcdefghijklmnopqrstuvwxyz"
+                        maxSoFar = float("-inf")
                         # Iterate x from 'A' to 'Y'
                         for x in range(len(alpha)-1):
 
