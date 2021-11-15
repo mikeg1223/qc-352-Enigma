@@ -1,7 +1,8 @@
 from Enigma import Enigma
 import time
 
-from Tests.plugDetectorTests import testCases as tcs
+#from Tests.plugDetectorTests import testCases as tcs
+from LanguageRecognition import LanguageRecognition
 '''
 Each file will contain 105,456 possible decrpytions
 Write decrpytions in the format:
@@ -23,6 +24,9 @@ def createDecryptFile(filename, x, y, ctext):
 
 cipherText = "egcvqcsahlfmctzgwwxikupvunrujaqimbxnwjhkwnxnisjaqbmouylcbxdnvdbvf"
 e = Enigma()
+lr = LanguageRecognition()
+count = 0
+total = 0
 
 # this code block generates plugess decrpytions
 '''
@@ -95,4 +99,22 @@ with open("UnEnigma/Tests/testPairs.txt", "r") as file:
 print(res)
 '''
 
+with open(r"C:\Users\micha\Desktop\CSCI 352 - Cryptography\Enigma\qc-352-Enigma\UnEnigma\Tests\testPairs.txt", "r") as file:
+    for line in file:
+        count += 1
+        e.wipe()
+        line = line.strip().split()
+        key = line[1][:9]
+        plugs = [line[1][9:11], line[1][11:13], line[1][13:15], line[1][15:17], line[1][-2:]]
+        cipherText = line[2]
+        e.setRotors(int(key[0]), int(key[1:3]), int(key[3]), int(key[4:6]), int(key[6]), int(key[-2:]))
+        dec = e.encryptString(cipherText)
+        plugs1 = lr.betterFindBestPlugs(dec, key, lr.indexOfCoincidenceUnigram, cipherText)
 
+        for x in plugs1:
+            if x in plugs or x[1] + x[0] in plugs:
+                total += 1
+
+        if count > 1000: break
+    
+    print("Average Common Plugs is:", total/1000)

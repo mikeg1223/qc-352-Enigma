@@ -1,6 +1,5 @@
 import random
 from Enigma import Enigma
-from UniSinkov.UniSinkovTest import UniSinkovTest
 from LanguageRecognition import LanguageRecognition
 import time
 

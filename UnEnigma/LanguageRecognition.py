@@ -19,19 +19,19 @@ class LanguageRecognition:
     # These 3 functions load in the unigram/bigram/trigram tables from the text files which were precomputed
 
     def loadUnigramTable(self):
-        with open("../Resources/sample_data/unigram_scores.txt", "r") as file:
+        with open(r"C:\Users\micha\Desktop\CSCI 352 - Cryptography\Enigma\qc-352-Enigma\Resources\sample_data\unigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.unigramTable[pair[0]] = float(pair[1])
     
     def loadBigramTable(self):
-        with open("../Resources/sample_data/bigram_scores.txt", "r") as file:
+        with open(r"C:\Users\micha\Desktop\CSCI 352 - Cryptography\Enigma\qc-352-Enigma\Resources\sample_data\bigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.bigramTable[pair[0]] = float(pair[1])
 
     def loadTrigramTable(self):
-        with open("../Resources/sample_data/trigram_scores.txt", "r") as file:
+        with open(r"C:\Users\micha\Desktop\CSCI 352 - Cryptography\Enigma\qc-352-Enigma\Resources\sample_data\trigram_scores.txt", "r") as file:
             for line in file:
                 pair = line.split()
                 LanguageRecognition.trigramTable[pair[0]] = float(pair[1])
@@ -548,6 +548,61 @@ class LanguageRecognition:
             char = s[rand.randint(0,100)%len(s)]
         
         return s[rand.randint(0,len(s)-1)]
+
+
+    def betterFindBestPlugs(self, decrypt: str, rotorSettings: str, f,cipher: str) -> list:
+
+        alpha = "abcdefghijklmnopqrstuvwxyz"
+        plugs = []
+        lastString = ""
+
+        e = Enigma()
+        e.setRotors(int(rotorSettings[0]), int(rotorSettings[1] + rotorSettings[2]), int(rotorSettings[3]), int(rotorSettings[4] + rotorSettings[5]), int(rotorSettings[6]), int(rotorSettings[7] + rotorSettings[8]))
+        
+            # Repeat for 5 plug pairs
+        for _ in range(5):
+
+            # test = self.sinkovStatisticBigram
+
+            baseLine = f(decrypt)
+            maxSoFar = baseLine
+
+            # Iterate x from 'A' to 'Y'
+            for x in range(len(alpha)-1):
+
+                # Iterate y from 'x+1' to 'Z'
+                for y in range(x+1,len(alpha)):
+                        
+                    # Reset enigma object 
+                    e.resetSteckerboard()
+                    e.resetRotorPositions()
+
+                    # Set the plugs we already found
+                    for pair in plugs:
+                        e.setSteckerboardPlug(pair[0],pair[1])
+
+                    # Set plugs for this trial
+                    e.setSteckerboardPlug(alpha[x], alpha[y])
+
+                    s = e.encryptString(cipher)
+                    score = f(s)
+
+                        # If we found a new best plug on this trial
+                    if (score > maxSoFar):
+                        maxSoFar = score
+                        bestA = x
+                        bestB = y
+                        best = alpha[x] + alpha[y]
+                        lastString = s
+
+            
+            #otherwise: add the best pair to the list of plugs, and remove them from the alphabet
+            else:
+                plugs.append(best)
+                alpha = alpha[:bestA] + alpha[bestA+1:bestB] + alpha[bestB+1:]
+        
+        return plugs
+
 
 
     # program runs from below 
