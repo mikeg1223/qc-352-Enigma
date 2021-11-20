@@ -99,6 +99,9 @@ with open("UnEnigma/Tests/testPairs.txt", "r") as file:
 print(res)
 '''
 
+
+# this code is configured to test empirically test the efficieny of different funcitons on finding the plugs
+'''
 with open(r"C:\Users\micha\Desktop\CSCI 352 - Cryptography\Enigma\qc-352-Enigma\UnEnigma\Tests\testPairs.txt", "r") as file:
     for line in file:
         count += 1
@@ -118,3 +121,18 @@ with open(r"C:\Users\micha\Desktop\CSCI 352 - Cryptography\Enigma\qc-352-Enigma\
         if count > 1000: break
     
     print("Average Common Plugs is:", total/1000)
+    '''
+
+
+# This runs an optimized hill climbing on all our plugless decrypt files and then separates the lines containing a k, or a d, or a b
+'''
+with open("randomTestFunctionality.txt", "a") as output:
+        start = time.time()
+        lr.findBestPlugsWithDepthFirstSearch(output)
+        end = time.time()
+        print(str(end- start) + " seconds in total") 
+
+lr.findKDBlines(open("randomTestFunctionality.txt", "r"))
+'''
+
+
